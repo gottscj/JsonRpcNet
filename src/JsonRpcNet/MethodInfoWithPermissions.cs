@@ -15,5 +15,20 @@ namespace JsonRpcNet
 			Roles = roles;
 			Users = users;
 		}
+
+		public object Invoke(object instance, object[] parameters, string role)
+		{
+			if (string.IsNullOrEmpty(role))
+			{
+				return MethodInfo.Invoke(instance, parameters);
+			}
+			
+			if (Roles.Contains(role))
+			{
+				return MethodInfo.Invoke(instance, parameters);
+			}
+
+			return null;
+		}
 	}
 }

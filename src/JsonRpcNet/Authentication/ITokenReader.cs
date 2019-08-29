@@ -1,7 +1,10 @@
-﻿namespace JsonRpcNet.Authentication
+﻿using System.Collections.Specialized;
+using System.Security.Principal;
+
+namespace JsonRpcNet.Authentication
 {
 	public interface ITokenReader
 	{
-		AuthenticatedIdentity Read(string token);
+		IIdentity GetIdentity(string token);
 	}
 }

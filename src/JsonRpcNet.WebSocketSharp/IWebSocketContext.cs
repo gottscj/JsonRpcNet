@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JsonRpcNet
+namespace JsonRpcNet.WebSocketSharp
 {
 	public interface IWebSocketContext<T>
 	{

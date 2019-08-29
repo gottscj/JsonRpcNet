@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet", "JsonRpcNet\JsonRpcNet.csproj", "{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.OAuth.Owin", "JsonRpcNet.OAuth.Owin\JsonRpcNet.OAuth.Owin.csproj", "{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.WebSocketSharp", "JsonRpcNet.WebSocketSharp\JsonRpcNet.WebSocketSharp.csproj", "{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.AspNetCore", "JsonRpcNet.AspNetCore\JsonRpcNet.AspNetCore.csproj", "{8330BEDC-666A-4A71-8540-AD2B3F7776E8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

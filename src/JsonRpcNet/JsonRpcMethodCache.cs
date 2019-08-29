@@ -9,7 +9,7 @@ namespace JsonRpcNet
 	{
 		private readonly Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>> _typeMethodCache = new Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>>();
 
-		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocket service)
+		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocketHandler service)
 		{
 			var type = service.GetType();
 			if (!_typeMethodCache.TryGetValue(type, out var methodCache))

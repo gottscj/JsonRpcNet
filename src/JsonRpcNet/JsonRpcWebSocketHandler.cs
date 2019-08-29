@@ -1,103 +1,87 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using JsonRpcNet.Authentication;
+using System.Threading.Tasks;
 using JsonRpcNet.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace JsonRpcNet
 {
-	public abstract class JsonRpcWebSocket : WebSocketBehavior
+	public abstract class JsonRpcWebSocketHandler : WebSocketHandler
 	{
 		private static readonly JsonRpcMethodCache MethodCache = new JsonRpcMethodCache();
-
-		private readonly IConnectionManager _connectionManager;
-		private readonly ITokenReader _tokenReader;
-
-		private volatile Connection _connection;
-		private volatile PermissionSet _permissions;
-
+		
 		private const string TokenQueryString = "token";
 
-		protected JsonRpcWebSocket(IConnectionManager connectionManager, ITokenReader tokenReader)
+		protected JsonRpcWebSocketHandler() 
 		{
-			_connectionManager = connectionManager ?? throw new ArgumentNullException(nameof(connectionManager));
-			_tokenReader = tokenReader ?? throw new ArgumentNullException(nameof(tokenReader));
 		}
 
-		protected Connection GetConnection()
+		protected Task SendAsync(JsonRpcContract jsonRpc)
 		{
-			if (_connection == null)
-			{
-				throw new Exception("The service is not connected");
-			}
-
-			return new Connection(_connection);
+			return SendMessageAsync(jsonRpc.ToJson());
 		}
 
-		protected void Send(JsonRpcContract data)
-		{
-			Send(data.ToJson());
-		}
-
-		protected override void OnMessage(MessageEventArgs msg)
+		protected override async Task OnMessage(MessageType messageType, string msg)
 		{
 			//TODO: Only accept requests. At the moment, responses are at the moment considered as invalid requests.
 			//      Response handling has to be implemented if the server should be allowed to send requests.
 			try
 			{
-				var request = DeserializeRequest(msg.Data);
+				var request = DeserializeRequest(msg);
 				var method = GetRequestMethodInfo(request);
 				var paramsArray = CreateParamsArray(request, method.MethodInfo);
 				var result = InvokeRpcMethod(request, method, paramsArray);
 				if (request.Id != null)
 				{
 					// do not answer notifications
-					Send(result);
+					await SendAsync(result).ConfigureAwait(false);
 				}
 			}
 			catch (JsonRpcErrorException e)
 			{
-				JsonRpcWebSocketServiceEventSource.Log.RequestError(ID, GetType().Name, e.Error.Error.Message, msg.Data, e.Error.ToJson(), e.ToString());
-				Send(e.Error);
+				//JsonRpcWebSocketServiceEventSource.Log.RequestError(ID, GetType().Name, e.Error.Error.Message, msg.Data, e.Error.ToJson(), e.ToString());
+				await SendAsync(e.Error);
 			}
 		}
 		
-		protected override void OnOpen()
+		protected override Task OnConnected()
 		{
 			var userEndPointIpAddress = GetUserEndpointIpAddress();
-			var identity = GetIdentity();
-			if (identity == null || userEndPointIpAddress == null)
-			{
-				JsonRpcWebSocketServiceEventSource.Log.ConnectionRefused(ID, userEndPointIpAddress?.ToString() ?? "Unknown", GetType().Name);
-				Context.WebSocket.Close(CloseStatusCode.PolicyViolation, "Not authorized");
-				return;
-			}
+//			var identity = GetIdentity();
+//			if (identity == null || userEndPointIpAddress == null)
+//			{
+////				JsonRpcWebSocketServiceEventSource.Log.ConnectionRefused(ID, userEndPointIpAddress?.ToString() ?? "Unknown", GetType().Name);
+//				return CloseAsync(CloseStatusCode.PolicyViolation, "Not authorized");
+//			}
 
 			// session id and connection id are the same, since there is one connection per session
-			_connection = _connectionManager.Add(ID, userEndPointIpAddress.ToString());
-			_connection.UserId = Guid.Parse(identity.Identity.GetUserId());
-			_connection.SessionId = ID;
+//			_connection = _connectionManager.Add(ID, userEndPointIpAddress.ToString());
+//			_connection.UserId = Guid.Parse(identity.GetUserId());
+//			_connection.SessionId = ID;
+//
+//			_permissions = identity.Permissions;
+//
+//			JsonRpcWebSocketServiceEventSource.Log.ConnectionOpened(ID, userEndPointIpAddress.ToString(), GetType().Name);
 
-			_permissions = identity.Permissions;
+			return Task.CompletedTask;
 
-			JsonRpcWebSocketServiceEventSource.Log.ConnectionOpened(ID, userEndPointIpAddress.ToString(), GetType().Name);
 		}
 
-		protected override void OnClose(CloseEventArgs e)
+		protected override Task OnDisconnected(CloseStatusCode code, string reason)
 		{
-			_connectionManager.Remove(ID);
+//			_connectionManager.Remove(ID);
+//
+//			JsonRpcWebSocketServiceEventSource.Log.ConnectionClosed(ID, GetType().Name);
+			return Task.CompletedTask;
 
-			JsonRpcWebSocketServiceEventSource.Log.ConnectionClosed(ID, GetType().Name);
 		}
 
-		private AuthenticatedIdentity GetIdentity()
-		{
-			var accessToken = Context.QueryString[TokenQueryString];
-			return _tokenReader.Read(accessToken);
-		}
+//		private IIdentity GetIdentity()
+//		{
+//			return _tokenReader.GetIdentity(Context.QueryString[TokenQueryString]);
+//		}
 
 		private static JsonRpcRequest DeserializeRequest(string requestStr)
 		{
@@ -149,7 +133,7 @@ namespace JsonRpcNet
 			// Execute method and get result
 			try
 			{
-				var result = method.Invoke(this, paramsArray, _permissions);
+				var result = method.Invoke(this, paramsArray, null);
 				return new JsonRpcResultResponse(result) {Id = request.Id};
 			}
 			catch (Exception e)
@@ -230,17 +214,6 @@ namespace JsonRpcNet
 			return true;
 		}
 
-		private IPAddress GetUserEndpointIpAddress()
-		{
-			// UserEndPoint can be disposed if e.g. the user closes the connection prematurely
-			try
-			{
-				return Context.UserEndPoint.Address;
-			}
-			catch
-			{
-				return null;
-			}
-		}
+		
 	}
 }

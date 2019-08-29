@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Linq;
-using System.Security.Claims;
+using System.Security.Principal;
+using JsonRpcNet.Authentication;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.OAuth;
 
-namespace JsonRpcNet.Authentication
+namespace JsonRpcNet.OAuth.Owin
 {
-	public class BearerTokenReader: ITokenReader
+	public class BearerTokenReader : ITokenReader
 	{
 		private readonly OAuthAuthorizationServerOptions _authorizationServerOptions;
 
@@ -13,20 +15,7 @@ namespace JsonRpcNet.Authentication
 			_authorizationServerOptions = authorizationServerOptions;
 		}
 
-		public AuthenticatedIdentity Read(string token)
-		{
-			var identity = GetIdentity(token);
-
-			if (identity?.IsAuthenticated != true ||
-			    !PermissionSet.TryParse(identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out var permissionSet))
-			{
-				return null;
-			}
-
-			return new AuthenticatedIdentity(identity, permissionSet);
-		}
-
-		private ClaimsIdentity GetIdentity(string token)
+		public IIdentity GetIdentity(string token)
 		{
 			var ticket = _authorizationServerOptions.AccessTokenFormat.Unprotect(token);
 			return IsTicketValid(ticket) ? ticket.Identity : null;

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using WebSocketSharp.Server;
 
-namespace JsonRpcNet.Extensions
+namespace JsonRpcNet.WebSocketSharp.Extensions
 {
 	public static class WebSocketServerExtensions
 	{
