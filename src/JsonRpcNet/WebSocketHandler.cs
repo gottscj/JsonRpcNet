@@ -7,7 +7,7 @@ namespace JsonRpcNet
     {
         private IJsonRpcWebSocket _jsonRpcWebSocket;
 
-        Task IWebSocketConnectionHandler.InitializeConnection(IJsonRpcWebSocket socket)
+        Task IWebSocketConnectionHandler.InitializeConnectionAsync(IJsonRpcWebSocket socket)
         {
             _jsonRpcWebSocket = socket;
             _jsonRpcWebSocket.OnMessageReceived += JsonRpcWebSocketOnOnMessage;
@@ -17,18 +17,13 @@ namespace JsonRpcNet
 
         private Task JsonRpcWebSocketOnOnMessage(MessageType messageType, string message)
         {
-            if (messageType == MessageType.Close)
-            {
-                return OnDisconnected(CloseStatusCode.Normal, "Client closed connection");
-            }
-
             return OnMessage(messageType, message);
 
         }
 
-        private Task JsonRpcWebSocketOnOnConnectionClosed(CloseStatusCode code, string reason)
+        private Task JsonRpcWebSocketOnOnConnectionClosed(int code, string reason)
         {
-            return OnDisconnected(code, reason);
+            return OnDisconnected((CloseStatusCode)code, reason);
         }
 
         protected virtual Task OnConnected()
@@ -52,13 +47,6 @@ namespace JsonRpcNet
                 return;
 
             await _jsonRpcWebSocket.SendAsync(message).ConfigureAwait(false);
-//            
-//            await socket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
-//                    offset: 0, 
-//                    count: message.Length),
-//                messageType: WebSocketMessageType.Text,
-//                endOfMessage: true,
-//                cancellationToken: CancellationToken.None);          
         }
 
         protected IPAddress GetUserEndpointIpAddress()

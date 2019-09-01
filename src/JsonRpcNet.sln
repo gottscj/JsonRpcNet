@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.WebSocketSharp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.AspNetCore", "JsonRpcNet.AspNetCore\JsonRpcNet.AspNetCore.csproj", "{8330BEDC-666A-4A71-8540-AD2B3F7776E8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{C44094DB-C531-453F-9026-A41209A59205}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.AspNetCore.Sample", "JsonRpcNet.AspNetCore.Sample\JsonRpcNet.AspNetCore.Sample.csproj", "{C7AA1E59-D29F-4A04-9625-60141E76DE9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,12 @@ Global
 		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8330BEDC-666A-4A71-8540-AD2B3F7776E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C7AA1E59-D29F-4A04-9625-60141E76DE9D} = {C44094DB-C531-453F-9026-A41209A59205}
 	EndGlobalSection
 EndGlobal

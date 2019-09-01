@@ -4,6 +4,6 @@ namespace JsonRpcNet
 {
     public interface IWebSocketConnectionHandler
     {
-        Task InitializeConnection(IJsonRpcWebSocket socket);
+        Task InitializeConnectionAsync(IJsonRpcWebSocket socket);
     }
 }

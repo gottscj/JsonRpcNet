@@ -73,7 +73,7 @@ namespace JsonRpcNet.WebSocketSharp
 
         protected override void OnClose(CloseEventArgs e)
         {
-            OnConnectionClosed?.Invoke((JsonRpcNet.CloseStatusCode) e.Code, e.Reason);
+            OnConnectionClosed?.Invoke(e.Code, e.Reason);
         }
     }
 }

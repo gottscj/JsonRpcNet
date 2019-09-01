@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace JsonRpcNet
 {
     public delegate Task MessageReceived(MessageType messageType, string message);
-    public delegate Task ConnectionClosed(CloseStatusCode code, string reason);
+    public delegate Task ConnectionClosed(int code, string reason);
     
     public interface IJsonRpcWebSocket
     {
