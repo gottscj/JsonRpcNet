@@ -8,6 +8,11 @@ namespace JsonRpcNet
 		public string RoutePrefix { get; }
 		public JsonRpcRoutePrefixAttribute(string routePrefix)
 		{
+            if (!routePrefix.StartsWith("/"))
+            {
+                routePrefix = "/" + routePrefix;
+            }
+
 			RoutePrefix = routePrefix;
 		}
 	}

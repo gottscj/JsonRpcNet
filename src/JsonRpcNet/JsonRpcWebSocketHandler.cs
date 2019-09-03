@@ -23,7 +23,12 @@ namespace JsonRpcNet
 			return SendMessageAsync(jsonRpc.ToJson());
 		}
 
-		protected override async Task OnMessage(MessageType messageType, string msg)
+        protected Task BroadcastAsync(JsonRpcContract jsonRpc)
+        {
+            return BroadcastAsync(jsonRpc.ToJson());
+        }
+
+        protected override async Task OnMessage(MessageType messageType, string msg)
 		{
 			//TODO: Only accept requests. At the moment, responses are at the moment considered as invalid requests.
 			//      Response handling has to be implemented if the server should be allowed to send requests.

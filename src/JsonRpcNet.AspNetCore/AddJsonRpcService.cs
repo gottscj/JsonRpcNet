@@ -7,13 +7,15 @@ namespace JsonRpcNet.AspNetCore
 {
     public static class JsonRpcApplicationBuilder
     {
-        public static IApplicationBuilder AddJsonRpcHandler(this IApplicationBuilder app, PathString path,
-            JsonRpcWebSocketHandler handler)
+        public static IApplicationBuilder AddJsonRpcHandler<TJsonRpcWebSocketHandler>(this IApplicationBuilder app)
+            where TJsonRpcWebSocketHandler : JsonRpcWebSocketHandler
         {
-            return app.Map(path, a => a.UseMiddleware<JsonRpcWebSocketMiddleware>(handler));
+            var routeprefixAttr = typeof(TJsonRpcWebSocketHandler).GetCustomAttribute<JsonRpcRoutePrefixAttribute>();
+            var handler = app.ApplicationServices.GetRequiredService <TJsonRpcWebSocketHandler>();
+            return app.Map(routeprefixAttr.RoutePrefix, a => a.UseMiddleware<JsonRpcWebSocketMiddleware>(handler));
         }
         
-        public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
+        public static IServiceCollection AddWebSocketHandlers(this IServiceCollection services)
         {
             foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
             {

@@ -3,31 +3,29 @@ using Microsoft.AspNetCore.Http;
 
 namespace JsonRpcNet.AspNetCore
 {
-    public class JsonRpcWebSocketMiddleware
+    public class JsonRpcWebSocketMiddleware : IMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly IWebSocketConnectionHandler _webSocketHandler;
 
-        public JsonRpcWebSocketMiddleware(RequestDelegate next, IWebSocketConnectionHandler webSocketHandler)
+        public JsonRpcWebSocketMiddleware(IWebSocketConnectionHandler webSocketHandler)
         {
-            _next = next;
             _webSocketHandler = webSocketHandler;
         }
-        
-        public async Task InvokeAsync(HttpContext context)
+
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 return;
             }
-            
+            //context.Request.Path
             var socket = await context.WebSockets.AcceptWebSocketAsync();
             var jsonRpcWebSocket = new NetCoreWebSocket(socket);
             await _webSocketHandler.InitializeConnectionAsync(jsonRpcWebSocket);
 
             await jsonRpcWebSocket.HandleMessages();
 
-            await _next.Invoke(context);
+            await next.Invoke(context);
         }
     }
 }

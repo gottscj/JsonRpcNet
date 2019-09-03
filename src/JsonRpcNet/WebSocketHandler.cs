@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -6,10 +8,12 @@ namespace JsonRpcNet
     public abstract class WebSocketHandler : IWebSocketConnectionHandler
     {
         private IJsonRpcWebSocket _jsonRpcWebSocket;
+        private static readonly IDictionary<string, IJsonRpcWebSocket> sockets = new Dictionary<string, IJsonRpcWebSocket>();
 
         Task IWebSocketConnectionHandler.InitializeConnectionAsync(IJsonRpcWebSocket socket)
         {
             _jsonRpcWebSocket = socket;
+            sockets[socket.Id] = socket;
             _jsonRpcWebSocket.OnMessageReceived += JsonRpcWebSocketOnOnMessage;
             _jsonRpcWebSocket.OnConnectionClosed += JsonRpcWebSocketOnOnConnectionClosed;
             return OnConnected();
@@ -23,6 +27,7 @@ namespace JsonRpcNet
 
         private Task JsonRpcWebSocketOnOnConnectionClosed(int code, string reason)
         {
+            sockets.Remove(_jsonRpcWebSocket.Id);
             return OnDisconnected((CloseStatusCode)code, reason);
         }
 
@@ -47,6 +52,17 @@ namespace JsonRpcNet
                 return;
 
             await _jsonRpcWebSocket.SendAsync(message).ConfigureAwait(false);
+        }
+
+        protected async Task BroadcastAsync(string message)
+        {
+            var tasks = new List<Task>();
+            foreach (var jsonRpcWebSocket in sockets.Where(kvp => kvp.Key != _jsonRpcWebSocket.Id))
+            {
+                tasks.Add(SendMessageAsync(message));
+            }
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         protected IPAddress GetUserEndpointIpAddress()
