@@ -11,7 +11,7 @@ namespace JsonRpcNet.AspNetCore
             where TJsonRpcWebSocketHandler : JsonRpcWebSocketHandler
         {
             var routeprefixAttr = typeof(TJsonRpcWebSocketHandler).GetCustomAttribute<JsonRpcRoutePrefixAttribute>();
-            var handler = app.ApplicationServices.GetRequiredService <TJsonRpcWebSocketHandler>();
+            var handler = app.ApplicationServices.GetRequiredService<TJsonRpcWebSocketHandler>();
             return app.Map(routeprefixAttr.RoutePrefix, a => a.UseMiddleware<JsonRpcWebSocketMiddleware>(handler));
         }
         
