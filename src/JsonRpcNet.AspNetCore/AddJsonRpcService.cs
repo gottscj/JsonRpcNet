@@ -1,6 +1,5 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JsonRpcNet.AspNetCore
@@ -10,11 +9,11 @@ namespace JsonRpcNet.AspNetCore
         public static IApplicationBuilder AddJsonRpcHandler<TJsonRpcWebSocketHandler>(this IApplicationBuilder app)
             where TJsonRpcWebSocketHandler : JsonRpcWebSocketHandler
         {
-            var routeprefixAttr = typeof(TJsonRpcWebSocketHandler).GetCustomAttribute<JsonRpcRoutePrefixAttribute>();
+            var routePrefixAttr = typeof(TJsonRpcWebSocketHandler).GetCustomAttribute<JsonRpcRoutePrefixAttribute>();
             var handler = app.ApplicationServices.GetRequiredService<TJsonRpcWebSocketHandler>();
-            return app.Map(routeprefixAttr.RoutePrefix, a => a.UseMiddleware<JsonRpcWebSocketMiddleware>(handler));
+            return app.Map(routePrefixAttr.RoutePrefix, a => a.UseMiddleware<JsonRpcWebSocketMiddleware>(handler));
         }
-        
+
         public static IServiceCollection AddWebSocketHandlers(this IServiceCollection services)
         {
             foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
