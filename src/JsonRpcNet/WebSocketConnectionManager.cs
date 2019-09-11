@@ -5,10 +5,10 @@ namespace JsonRpcNet
 {
     public abstract class WebSocketConnectionManager
     {
-        private readonly Dictionary<string, IJsonRpcWebSocket> _sockets = new Dictionary<string, IJsonRpcWebSocket>();
+        private readonly Dictionary<string, IWebSocket> _sockets = new Dictionary<string, IWebSocket>();
         private readonly object _syncRoot = new object();
         
-        public IJsonRpcWebSocket GetSocketById(string id)
+        public IWebSocket GetSocketById(string id)
         {
             lock (_syncRoot)
             {
@@ -21,7 +21,7 @@ namespace JsonRpcNet
             return null;
         }
 
-        public Dictionary<string, IJsonRpcWebSocket> GetAll()
+        public Dictionary<string, IWebSocket> GetAll()
         {
             lock (_syncRoot)
             {
@@ -29,7 +29,7 @@ namespace JsonRpcNet
             }
         }
 
-        public string GetId(IJsonRpcWebSocket socket)
+        public string GetId(IWebSocket socket)
         {
             lock (_syncRoot)
             {
@@ -37,7 +37,7 @@ namespace JsonRpcNet
             }
         }
         
-        public void AddSocket(IJsonRpcWebSocket socket)
+        public void AddSocket(IWebSocket socket)
         {
             lock (_syncRoot)
             {

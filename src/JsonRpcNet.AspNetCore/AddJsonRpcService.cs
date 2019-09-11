@@ -7,7 +7,7 @@ namespace JsonRpcNet.AspNetCore
     public static class JsonRpcApplicationBuilder
     {
         public static IApplicationBuilder AddJsonRpcHandler<TJsonRpcWebSocketHandler>(this IApplicationBuilder app)
-            where TJsonRpcWebSocketHandler : JsonRpcWebSocketHandler
+            where TJsonRpcWebSocketHandler : JsonRpcWebSocketConnection
         {
             var routePrefixAttr = typeof(TJsonRpcWebSocketHandler).GetCustomAttribute<JsonRpcRoutePrefixAttribute>();
             var handler = app.ApplicationServices.GetRequiredService<TJsonRpcWebSocketHandler>();
@@ -18,7 +18,7 @@ namespace JsonRpcNet.AspNetCore
         {
             foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
             {
-                if(type.GetTypeInfo().BaseType == typeof(JsonRpcWebSocketHandler))
+                if(type.GetTypeInfo().BaseType == typeof(JsonRpcWebSocketConnection))
                 {
                     services.AddTransient(type);
                 }

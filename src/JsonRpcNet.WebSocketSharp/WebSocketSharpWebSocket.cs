@@ -1,20 +1,24 @@
 using System;
 using System.Net;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace JsonRpcNet.WebSocketSharp
 {
-    public class JsonRpcWebSocketSharpJsonRpcWebSocket : WebSocketBehavior, IJsonRpcWebSocket
+    public class WebSocketSharpWebSocket : WebSocketBehavior, IWebSocket
     {
-        public JsonRpcWebSocketSharpJsonRpcWebSocket()
+        private readonly CancellationToken _cancellationToken;
+        private readonly AsyncQueue<(MessageType messageType,ArraySegment<byte> data)> _queue;
+        
+        public WebSocketSharpWebSocket(CancellationToken cancellationToken)
         {
+            _cancellationToken = cancellationToken;
+            _queue = new AsyncQueue<(MessageType messageType, ArraySegment<byte> data)>();
         }
         
-        public event MessageReceived OnMessageReceived;
-        public event ConnectionClosed OnConnectionClosed;
-
         public string Id => ID;
         public IPEndPoint UserEndPoint => Context.UserEndPoint;
 
@@ -38,13 +42,18 @@ namespace JsonRpcNet.WebSocketSharp
             }
         }
 
-        public Task SendAsync(string message)
+        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync(CancellationToken cancellation)
+        {
+            return _queue.DequeueAsync(cancellation);
+        }
+
+        public Task SendAsync(string message, CancellationToken cancellation)
         {
             base.Send(message);
             return Task.CompletedTask;
         }
 
-        public Task CloseAsync(int code, string reason)
+        public Task CloseAsync(int code, string reason, CancellationToken cancellation)
         {
             base.Context.WebSocket.Close((ushort)code, reason);
             return Task.CompletedTask;
@@ -54,14 +63,13 @@ namespace JsonRpcNet.WebSocketSharp
         {
             if (e.IsBinary)
             {
-                // TODO handle binary
-                //OnMessageReceived?.Invoke(MessageType.Binary, e.RawData);
+                _queue.Enqueue((MessageType.Binary, new ArraySegment<byte>(e.RawData)));
                 return;
             }
             
             if( e.IsText)
             {
-                OnMessageReceived?.Invoke(MessageType.Text, e.Data);
+                _queue.Enqueue((MessageType.Text, new ArraySegment<byte>(e.RawData)));
                 return;
             }
 
@@ -73,7 +81,7 @@ namespace JsonRpcNet.WebSocketSharp
 
         protected override void OnClose(CloseEventArgs e)
         {
-            OnConnectionClosed?.Invoke(e.Code, e.Reason);
+            _queue.Enqueue((MessageType.Close, new ArraySegment<byte>(Encoding.UTF8.GetBytes(e.Reason))));
         }
     }
 }

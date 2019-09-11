@@ -6,9 +6,9 @@ namespace JsonRpcNet.AspNetCore
     public class JsonRpcWebSocketMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IWebSocketConnectionHandler _webSocketHandler;
+        private readonly IWebSocketConnection _webSocketHandler;
 
-        public JsonRpcWebSocketMiddleware(RequestDelegate next, IWebSocketConnectionHandler webSocketHandler)
+        public JsonRpcWebSocketMiddleware(RequestDelegate next, IWebSocketConnection webSocketHandler)
         {
             _next = next;
             _webSocketHandler = webSocketHandler;
@@ -23,10 +23,9 @@ namespace JsonRpcNet.AspNetCore
 
             //context.Request.Path
             var socket = await context.WebSockets.AcceptWebSocketAsync();
-            var jsonRpcWebSocket = new NetCoreWebSocket(socket);
-            await _webSocketHandler.InitializeConnectionAsync(jsonRpcWebSocket);
-
-            await jsonRpcWebSocket.HandleMessages();
+            var netCoreWebsocket = new NetCoreWebSocket(socket);
+            netCoreWebsocket.BeginProcessMessages(context.RequestAborted);
+            await _webSocketHandler.HandleMessagesAsync(netCoreWebsocket, context.RequestAborted);
 
             await _next.Invoke(context);
         }

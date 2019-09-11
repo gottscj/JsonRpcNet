@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 
 namespace JsonRpcNet.AspNetCore
 {
-    public class NetCoreWebSocket : IJsonRpcWebSocket
+    public class NetCoreWebSocket : IWebSocket
     {
         private readonly WebSocket _webSocket;
-
+        private readonly AsyncQueue<(MessageType messageType, ArraySegment<byte> data)> _queue =
+            new AsyncQueue<(MessageType messageType, ArraySegment<byte> data)>();
+        
         public NetCoreWebSocket(WebSocket webSocket)
         {
             _webSocket = webSocket;
             Id = Guid.NewGuid().ToString();
         }
-        public event MessageReceived OnMessageReceived;
-        public event ConnectionClosed OnConnectionClosed;
-        
         public string Id { get; }
         public IPEndPoint UserEndPoint => null;
 
@@ -48,7 +47,7 @@ namespace JsonRpcNet.AspNetCore
             }
         }
 
-        public Task SendAsync(string message)
+        public Task SendAsync(string message, CancellationToken cancellation)
         {
             return _webSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.UTF8.GetBytes(message),
                     offset: 0, 
@@ -58,37 +57,75 @@ namespace JsonRpcNet.AspNetCore
                 cancellationToken: CancellationToken.None);
         }
 
-        public Task CloseAsync(int code, string reason)
+        public Task CloseAsync(int code, string reason, CancellationToken cancellation)
         {
-            return _webSocket.CloseAsync((WebSocketCloseStatus)code, reason, CancellationToken.None);
+            return _webSocket.CloseAsync((WebSocketCloseStatus)code, reason, cancellation);
         }
-        
-        public async Task HandleMessages()
+
+        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync(CancellationToken cancellation)
         {
-            var buffer = new ArraySegment<byte>(new byte[1024 * 4]);
+            return _queue.DequeueAsync(cancellation);
+        }
 
-            while(_webSocket.State == System.Net.WebSockets.WebSocketState.Open)
+        
+        
+        public async void BeginProcessMessages(CancellationToken cancellationToken)
+        {
+            while(_webSocket.State == System.Net.WebSockets.WebSocketState.Open || !cancellationToken.IsCancellationRequested)
             {
-                var result = await _webSocket.ReceiveAsync(buffer,
-                    cancellationToken: CancellationToken.None).ConfigureAwait(false);
+                var (buffer, type, closeStatusDescription) = await ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
 
-                if (result.MessageType == WebSocketMessageType.Text && buffer.Array != null)
+                if (type == WebSocketMessageType.Text && buffer != null)
                 {
-                    var request = Encoding.UTF8.GetString(buffer.Array, 
-                    buffer.Offset, 
-                    buffer.Count);
-                    OnMessageReceived?.Invoke(MessageType.Text, request);
+                    _queue.Enqueue(((MessageType)type, buffer));
                     return;
                 }
 
-                if (result.MessageType == WebSocketMessageType.Close)
+                if (type == WebSocketMessageType.Close)
                 {
-                    OnConnectionClosed?.Invoke(
-                        result.CloseStatus.HasValue ? (int) result.CloseStatus.Value : (int) CloseStatusCode.NoStatus,
-                        result.CloseStatusDescription);
+                    _queue.Enqueue(((MessageType)type, new ArraySegment<byte>(Encoding.UTF8.GetBytes(closeStatusDescription))));
                 }
 
             }
+        }
+
+        private async
+            Task<(ArraySegment<byte> buffer, WebSocketMessageType type, string
+                closeStatusDescription)> ReceiveMessageAsync(CancellationToken cancellationToken)
+        {
+            const int bufferSize = 4096;
+            var buffer = new byte[bufferSize];
+            var offset = 0;
+            var free = buffer.Length;
+            WebSocketMessageType type;
+            string closeStatusDescription;
+            while (true)
+            {
+                var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer, offset, free),
+                    cancellationToken).ConfigureAwait(false);
+                offset += result.Count;
+                free -= result.Count;
+                if (result.EndOfMessage)
+                {
+                    type = result.MessageType;
+                    closeStatusDescription = result.CloseStatusDescription;
+                    break;
+                }
+
+                if (free == 0)
+                {
+                    // No free space
+                    // Resize the outgoing buffer
+                    var newSize = buffer.Length + bufferSize;
+
+                    var newBuffer = new byte[newSize];
+                    Array.Copy(buffer, 0, newBuffer, 0, offset);
+                    buffer = newBuffer;
+                    free = buffer.Length - offset;
+                }
+            }
+            
+            return (new ArraySegment<byte>(buffer, 0, offset), type, closeStatusDescription);
         }
     }
 }

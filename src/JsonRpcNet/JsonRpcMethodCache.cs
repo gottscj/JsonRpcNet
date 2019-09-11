@@ -9,9 +9,9 @@ namespace JsonRpcNet
 	{
 		private readonly Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>> _typeMethodCache = new Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>>();
 
-		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocketHandler service)
+		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocketConnection connection)
 		{
-			var type = service.GetType();
+			var type = connection.GetType();
 			if (!_typeMethodCache.TryGetValue(type, out var methodCache))
 			{
 				methodCache = type.GetMethods()
@@ -21,7 +21,7 @@ namespace JsonRpcNet
 						var authorizeAttribute = m.GetCustomAttribute<AuthorizeAttribute>();
 						if (authorizeAttribute == null)
 						{
-							throw new InvalidOperationException($"Method \'{type.FullName}.{m.Name}\' is missing the permissions attribute \'{nameof(AuthorizeAttribute)}\'");
+							return new MethodInfoWithPermissions(new FastMethodInfo(m), null, null);
 						}
 
 						return new MethodInfoWithPermissions(new FastMethodInfo(m), authorizeAttribute.Roles, authorizeAttribute.Users);
