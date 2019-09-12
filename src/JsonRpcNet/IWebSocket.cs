@@ -13,10 +13,10 @@ namespace JsonRpcNet
         
         JsonRpcWebSocketState WebSocketState { get; }
 
-        Task SendAsync(string message, CancellationToken cancellation);
+        Task SendAsync(string message);
 
-        Task CloseAsync(int code, string reason, CancellationToken cancellation);
+        Task CloseAsync(int code, string reason);
 
-        Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync(CancellationToken cancellation);
+        Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync();
     }
 }

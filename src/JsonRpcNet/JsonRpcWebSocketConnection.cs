@@ -96,7 +96,15 @@ namespace JsonRpcNet
 			}
 			catch (JsonReaderException e)
 			{
-				var errorResponse = JsonRpcErrors.ParseError(e.Message);
+				var exampleJsonRpc = JsonConvert.SerializeObject(new JsonRpcRequest
+				{
+					Id = "1",
+					Method = "SomeMethod",
+					Params = new object[] {"param1", "param2"}
+				});
+				var errorMessage = $"Invalid input expected jsonrpc 2.0 input '{exampleJsonRpc}'\r\n" +
+				                   $"Serializer error message: '{e.Message}'";
+				var errorResponse = JsonRpcErrors.ParseError(errorMessage);
 				throw new JsonRpcErrorException(errorResponse, e);
 			}
 			catch (Exception e)

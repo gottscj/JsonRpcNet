@@ -12,11 +12,14 @@ namespace JsonRpcNet.AspNetCore
         private readonly WebSocket _webSocket;
         private readonly AsyncQueue<(MessageType messageType, ArraySegment<byte> data)> _queue =
             new AsyncQueue<(MessageType messageType, ArraySegment<byte> data)>();
-        
-        public NetCoreWebSocket(WebSocket webSocket)
+
+        private readonly CancellationToken _cancellation;
+        public NetCoreWebSocket(WebSocket webSocket, CancellationToken cancellation)
         {
             _webSocket = webSocket;
+            _cancellation = cancellation;
             Id = Guid.NewGuid().ToString();
+            BeginProcessMessages();
         }
         public string Id { get; }
         public IPEndPoint UserEndPoint => null;
@@ -47,35 +50,35 @@ namespace JsonRpcNet.AspNetCore
             }
         }
 
-        public Task SendAsync(string message, CancellationToken cancellation)
+        public Task SendAsync(string message)
         {
             return _webSocket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.UTF8.GetBytes(message),
                     offset: 0, 
                     count: message.Length),
                 messageType: WebSocketMessageType.Text,
                 endOfMessage: true,
-                cancellationToken: CancellationToken.None);
+                _cancellation);
         }
 
-        public Task CloseAsync(int code, string reason, CancellationToken cancellation)
+        public Task CloseAsync(int code, string reason)
         {
-            return _webSocket.CloseAsync((WebSocketCloseStatus)code, reason, cancellation);
+            return _webSocket.CloseAsync((WebSocketCloseStatus)code, reason, _cancellation);
         }
 
-        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync(CancellationToken cancellation)
+        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync()
         {
-            return _queue.DequeueAsync(cancellation);
+            return _queue.DequeueAsync(_cancellation);
         }
 
         
         
-        public async void BeginProcessMessages(CancellationToken cancellationToken)
+        private async void BeginProcessMessages()
         {
-            while(_webSocket.State == System.Net.WebSockets.WebSocketState.Open || !cancellationToken.IsCancellationRequested)
+            while(_webSocket.State == System.Net.WebSockets.WebSocketState.Open && !_cancellation.IsCancellationRequested)
             {
-                var (buffer, type, closeStatusDescription) = await ReceiveMessageAsync(cancellationToken).ConfigureAwait(false);
+                var (buffer, type, closeStatusDescription) = await ReceiveMessageAsync().ConfigureAwait(false);
 
-                if (type == WebSocketMessageType.Text && buffer != null)
+                if (type == WebSocketMessageType.Text)
                 {
                     _queue.Enqueue(((MessageType)type, buffer));
                     continue;
@@ -85,24 +88,35 @@ namespace JsonRpcNet.AspNetCore
                 {
                     _queue.Enqueue(((MessageType)type, new ArraySegment<byte>(Encoding.UTF8.GetBytes(closeStatusDescription))));
                 }
-
             }
         }
 
         private async
             Task<(ArraySegment<byte> buffer, WebSocketMessageType type, string
-                closeStatusDescription)> ReceiveMessageAsync(CancellationToken cancellationToken)
+                closeStatusDescription)> ReceiveMessageAsync()
         {
             const int bufferSize = 4096;
             var buffer = new byte[bufferSize];
             var offset = 0;
             var free = buffer.Length;
-            WebSocketMessageType type;
-            string closeStatusDescription;
-            while (true)
+            WebSocketMessageType type = WebSocketMessageType.Close;
+            string closeStatusDescription = string.Empty;
+            while (!_cancellation.IsCancellationRequested)
             {
-                var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer, offset, free),
-                    cancellationToken).ConfigureAwait(false);
+                WebSocketReceiveResult result;
+                try
+                {
+                    result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer, offset, free),
+                        _cancellation).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    await _webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", _cancellation);
+                    Console.WriteLine(e);
+                    return (new ArraySegment<byte>(), WebSocketMessageType.Close, "Socket closed");
+                }
+               
+                 
                 offset += result.Count;
                 free -= result.Count;
                 if (result.EndOfMessage)

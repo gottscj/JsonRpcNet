@@ -18,16 +18,14 @@ namespace JsonRpcNet.AspNetCore
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
+                await _next.Invoke(context);
                 return;
             }
 
             //context.Request.Path
             var socket = await context.WebSockets.AcceptWebSocketAsync();
-            var netCoreWebsocket = new NetCoreWebSocket(socket);
-            netCoreWebsocket.BeginProcessMessages(context.RequestAborted);
-            await _webSocketHandler.HandleMessagesAsync(netCoreWebsocket, context.RequestAborted);
-
-            await _next.Invoke(context);
+            var netCoreWebsocket = new NetCoreWebSocket(socket, context.RequestAborted);
+            await _webSocketHandler.HandleMessagesAsync(netCoreWebsocket);
         }
     }
 }

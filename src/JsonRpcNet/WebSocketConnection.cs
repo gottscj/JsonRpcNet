@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace JsonRpcNet
@@ -13,16 +12,14 @@ namespace JsonRpcNet
         private IWebSocket _webSocket;
         private static readonly IDictionary<string, IWebSocket> Sockets = new Dictionary<string, IWebSocket>();
 
-        private CancellationToken _cancellation = default(CancellationToken);
-        async Task IWebSocketConnection.HandleMessagesAsync(IWebSocket socket, CancellationToken cancellationToken)
+        async Task IWebSocketConnection.HandleMessagesAsync(IWebSocket socket)
         {
             _webSocket = socket;
             Sockets[socket.Id] = socket;
-            _cancellation = cancellationToken;
             await OnConnected();
             while (_webSocket.WebSocketState == JsonRpcWebSocketState.Open)
             {
-                var (type, buffer) = await _webSocket.ReceiveAsync(cancellationToken);
+                var (type, buffer) = await _webSocket.ReceiveAsync();
                 string message = null;
                 if (buffer.Array == null)
                 {
@@ -63,7 +60,7 @@ namespace JsonRpcNet
 
         protected Task CloseAsync(CloseStatusCode statusCode, string reason)
         {
-            return _webSocket.CloseAsync((int)statusCode, reason, _cancellation);
+            return _webSocket.CloseAsync((int)statusCode, reason);
         }
         
         protected async Task SendAsync(string message)
@@ -71,7 +68,7 @@ namespace JsonRpcNet
             if(_webSocket.WebSocketState != JsonRpcWebSocketState.Open)
                 return;
 
-            await _webSocket.SendAsync(message, _cancellation).ConfigureAwait(false);
+            await _webSocket.SendAsync(message).ConfigureAwait(false);
         }
 
         protected async Task BroadcastAsync(string message)
@@ -79,7 +76,7 @@ namespace JsonRpcNet
             var tasks = new List<Task>();
             foreach (var jsonRpcWebSocket in Sockets.Where(kvp => kvp.Key != _webSocket.Id).Select(kvp => kvp.Value))
             {
-                tasks.Add(jsonRpcWebSocket.SendAsync(message, _cancellation));
+                tasks.Add(jsonRpcWebSocket.SendAsync(message));
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);

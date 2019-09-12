@@ -5,6 +5,6 @@ namespace JsonRpcNet
 {
     public interface IWebSocketConnection
     {
-        Task HandleMessagesAsync(IWebSocket socket, CancellationToken cancellationToken);
+        Task HandleMessagesAsync(IWebSocket socket);
     }
 }

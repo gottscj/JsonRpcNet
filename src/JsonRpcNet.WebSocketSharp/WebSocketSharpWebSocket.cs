@@ -42,18 +42,18 @@ namespace JsonRpcNet.WebSocketSharp
             }
         }
 
-        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync(CancellationToken cancellation)
+        public Task<(MessageType messageType, ArraySegment<byte> data)> ReceiveAsync()
         {
-            return _queue.DequeueAsync(cancellation);
+            return _queue.DequeueAsync(_cancellationToken);
         }
 
-        public Task SendAsync(string message, CancellationToken cancellation)
+        public Task SendAsync(string message)
         {
             base.Send(message);
             return Task.CompletedTask;
         }
 
-        public Task CloseAsync(int code, string reason, CancellationToken cancellation)
+        public Task CloseAsync(int code, string reason)
         {
             base.Context.WebSocket.Close((ushort)code, reason);
             return Task.CompletedTask;
