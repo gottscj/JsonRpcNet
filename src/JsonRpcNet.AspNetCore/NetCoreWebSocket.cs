@@ -78,7 +78,7 @@ namespace JsonRpcNet.AspNetCore
                 if (type == WebSocketMessageType.Text && buffer != null)
                 {
                     _queue.Enqueue(((MessageType)type, buffer));
-                    return;
+                    continue;
                 }
 
                 if (type == WebSocketMessageType.Close)
