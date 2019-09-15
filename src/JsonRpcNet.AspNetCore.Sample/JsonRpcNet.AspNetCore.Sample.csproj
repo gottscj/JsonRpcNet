@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\JsonRpcNet.AspNetCore\JsonRpcNet.AspNetCore.csproj" />
+      <ProjectReference Include="..\JsonRpcNet.Docs\JsonRpcNet.Docs.csproj" />
       <ProjectReference Include="..\JsonRpcNet\JsonRpcNet.csproj" />
     </ItemGroup>
 
