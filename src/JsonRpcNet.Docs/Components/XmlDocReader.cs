@@ -31,9 +31,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace JsonRpcNet.Ts.Components
+namespace JsonRpcNet.Docs.Components
 {
-    static class TsDocGenerator
+    static class XmlDocReader
     {
         public static XmlNodeList GetMemberNodes(string xmlDocPath)
         {

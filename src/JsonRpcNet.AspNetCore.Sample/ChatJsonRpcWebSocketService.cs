@@ -6,10 +6,10 @@ using JsonRpcNet.Attributes;
 
 namespace JsonRpcNet.AspNetCore.Sample
 {
-    [JsonRpcService("chat")]
+    [JsonRpcService("chat", Description = "Chat hub", Name = "ChatService")]
     public class ChatJsonRpcWebSocketService : JsonRpcWebSocketService
     {
-        [JsonRpcMethod("sendMessage")]
+        [JsonRpcMethod("sendMessage", Description = "Sends a message to the chat")]
         public void SendMessage(string message)
         {
             BroadcastAsync(message);

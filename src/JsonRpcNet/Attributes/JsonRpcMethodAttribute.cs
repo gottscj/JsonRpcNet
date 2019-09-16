@@ -6,7 +6,8 @@ namespace JsonRpcNet.Attributes
 	public class JsonRpcMethodAttribute : System.Attribute
 	{
 		public string Name { get; }
-
+		public string Description { get; set; }
+		
 		public JsonRpcMethodAttribute(string name)
 		{
 			Name = name;
@@ -16,8 +17,11 @@ namespace JsonRpcNet.Attributes
 	[AttributeUsage(AttributeTargets.Class)]
 	public class JsonRpcServiceAttribute : System.Attribute
 	{
-		public string Path { get; set; }
+		public string Path { get; }
+		public string Description { get; set; }
 
+		public string Name { get; set; }
+		
 		public JsonRpcServiceAttribute(string path)
 		{
 			if (!path.StartsWith("/"))
