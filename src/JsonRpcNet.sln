@@ -1,16 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet", "JsonRpcNet\JsonRpcNet.csproj", "{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet", "JsonRpcNet\JsonRpcNet.csproj", "{16D9C0F7-A156-4BB5-A58F-E962D7F0D09B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.OAuth.Owin", "JsonRpcNet.OAuth.Owin\JsonRpcNet.OAuth.Owin.csproj", "{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet.OAuth.Owin", "JsonRpcNet.OAuth.Owin\JsonRpcNet.OAuth.Owin.csproj", "{92FD0F4C-AC92-4D9E-9BC4-DF057EAFA914}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.WebSocketSharp", "JsonRpcNet.WebSocketSharp\JsonRpcNet.WebSocketSharp.csproj", "{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet.WebSocketSharp", "JsonRpcNet.WebSocketSharp\JsonRpcNet.WebSocketSharp.csproj", "{394B1FE0-1782-48A9-87E2-37E69AC6A7FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.AspNetCore", "JsonRpcNet.AspNetCore\JsonRpcNet.AspNetCore.csproj", "{8330BEDC-666A-4A71-8540-AD2B3F7776E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet.AspNetCore", "JsonRpcNet.AspNetCore\JsonRpcNet.AspNetCore.csproj", "{8330BEDC-666A-4A71-8540-AD2B3F7776E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{C44094DB-C531-453F-9026-A41209A59205}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.AspNetCore.Sample", "JsonRpcNet.AspNetCore.Sample\JsonRpcNet.AspNetCore.Sample.csproj", "{C7AA1E59-D29F-4A04-9625-60141E76DE9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet.AspNetCore.Sample", "JsonRpcNet.AspNetCore.Sample\JsonRpcNet.AspNetCore.Sample.csproj", "{C7AA1E59-D29F-4A04-9625-60141E76DE9D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonRpcNet.Docs", "JsonRpcNet.Docs\JsonRpcNet.Docs.csproj", "{C4EDC84C-6A51-4ED4-8C6E-DA3C5B71D1E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonRpcNet.Ts", "JsonRpcNet.Ts\JsonRpcNet.Ts.csproj", "{AA9E0FC1-CC2D-40B6-AC2A-C5195BEF14E9}"
 EndProject
@@ -40,12 +45,22 @@ Global
 		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7AA1E59-D29F-4A04-9625-60141E76DE9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4EDC84C-6A51-4ED4-8C6E-DA3C5B71D1E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4EDC84C-6A51-4ED4-8C6E-DA3C5B71D1E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4EDC84C-6A51-4ED4-8C6E-DA3C5B71D1E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4EDC84C-6A51-4ED4-8C6E-DA3C5B71D1E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA9E0FC1-CC2D-40B6-AC2A-C5195BEF14E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA9E0FC1-CC2D-40B6-AC2A-C5195BEF14E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA9E0FC1-CC2D-40B6-AC2A-C5195BEF14E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA9E0FC1-CC2D-40B6-AC2A-C5195BEF14E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C7AA1E59-D29F-4A04-9625-60141E76DE9D} = {C44094DB-C531-453F-9026-A41209A59205}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FDCE8D50-2576-4C09-A186-3ADA77CD4DAD}
 	EndGlobalSection
 EndGlobal

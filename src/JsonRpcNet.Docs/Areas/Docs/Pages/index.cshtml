@@ -1,0 +1,23 @@
+﻿@page
+@model JsonRpcNet.Docs.MyFeature.Pages.JsonRpcDocsModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/css/bootstrap.css" type="text/css" />
+    <title>JsonRpcNet Docs</title>
+</head>
+<body>
+    <h2>
+        JsonRpcNet Docs
+    </h2>
+    @for (var i = 1; i < 10; ++i)
+    {
+        <p>Function @i</p>
+        <button type="button">Try me!</button>
+    }
+
+</body>
+</html>
