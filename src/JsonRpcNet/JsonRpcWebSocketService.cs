@@ -8,13 +8,13 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonRpcNet
 {
-	public abstract class JsonRpcWebSocketConnection : WebSocketConnection
+	public abstract class JsonRpcWebSocketService : WebSocketConnection
 	{
 		private static readonly JsonRpcMethodCache MethodCache = new JsonRpcMethodCache();
 		
 		private const string TokenQueryString = "token";
 
-		protected JsonRpcWebSocketConnection() 
+		protected JsonRpcWebSocketService() 
 		{
 		}
 

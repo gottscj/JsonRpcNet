@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JsonRpcNet.Attributes;
 
 namespace JsonRpcNet
 {
@@ -9,9 +10,9 @@ namespace JsonRpcNet
 	{
 		private readonly Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>> _typeMethodCache = new Dictionary<Type, Dictionary<string, MethodInfoWithPermissions>>();
 
-		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocketConnection connection)
+		public Dictionary<string, MethodInfoWithPermissions> Get(JsonRpcWebSocketService service)
 		{
-			var type = connection.GetType();
+			var type = service.GetType();
 			if (!_typeMethodCache.TryGetValue(type, out var methodCache))
 			{
 				methodCache = type.GetMethods()

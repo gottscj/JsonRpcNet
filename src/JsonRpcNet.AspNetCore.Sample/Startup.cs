@@ -27,7 +27,7 @@ namespace JsonRpcNet.AspNetCore.Sample
             }
 
             app.UseWebSockets();
-            app.AddJsonRpcHandler<ChatJsonRpcWebSocketConnection>();
+            app.AddJsonRpcHandler<ChatJsonRpcWebSocketService>();
 
             app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
         }
