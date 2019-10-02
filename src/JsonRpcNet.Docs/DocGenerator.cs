@@ -1,24 +1,30 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using JsonRpcNet.Attributes;
 
-namespace JsonRpcNet.Docs.Components
+namespace JsonRpcNet.Docs
 {
     public static class DocGenerator
     {
+        public static JsonRpcDoc JsonRpcDoc { get; set; }
         public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc<T>()
         {
+            return GenerateJsonRpcServiceDoc(typeof(T));
+        }
+        public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc(Type type)
+        {
             var serviceAttribute =
-                (JsonRpcServiceAttribute) typeof(T).GetCustomAttribute(typeof(JsonRpcServiceAttribute));
+                (JsonRpcServiceAttribute) type.GetCustomAttribute(typeof(JsonRpcServiceAttribute));
 
             var serviceDoc = new JsonRpcServiceDoc
             {
                 Name = serviceAttribute.Name,
-                Path = serviceAttribute?.Path ?? typeof(T).Name,
+                Path = serviceAttribute?.Path ?? type.Name.ToLower(),
                 Description = serviceAttribute?.Description ?? string.Empty
             };
 
-            var methodMetaData = typeof(T).GetMethods(BindingFlags.Instance | BindingFlags.Public)
+            var methodMetaData = type.GetMethods(BindingFlags.Instance | BindingFlags.Public)
                 .Where(m => m.GetCustomAttribute(typeof(JsonRpcMethodAttribute)) != null)
                 .Select(m => new
                 {

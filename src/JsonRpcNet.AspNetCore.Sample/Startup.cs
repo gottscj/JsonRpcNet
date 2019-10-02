@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JsonRpcNet.Docs;
-using JsonRpcNet.Docs.Components;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +26,6 @@ namespace JsonRpcNet.AspNetCore.Sample
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddWebSocketHandlers();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddJsonRpcNetDocs();
         }
 
@@ -39,13 +37,32 @@ namespace JsonRpcNet.AspNetCore.Sample
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseJsonRpcApi("help");
             app.UseWebSockets();
             app.AddJsonRpcHandler<ChatJsonRpcWebSocketService>();
 
+            DocGenerator.JsonRpcDoc = new JsonRpcDoc
+            {
+                Contact = new ContactDoc
+                {
+                    Email = "test@test.com"
+                },
+                GeneralInfo = new JsonRpcInfoDoc
+                {
+                    Description = "Api for JsonRpc chat",
+                    Title = "Chat API",
+                    Version = "v1"
+                },
+                Services = new List<JsonRpcServiceDoc>
+                {
+                    DocGenerator.GenerateJsonRpcServiceDoc<ChatJsonRpcWebSocketService>()
+                }
+            };
+            
             var doc = DocGenerator.GenerateJsonRpcServiceDoc<ChatJsonRpcWebSocketService>();
             
-            app.UseStaticFiles();
-            app.UseMvc();
+//            app.UseStaticFiles();
+//            app.UseMvc();
 
             app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
         }
