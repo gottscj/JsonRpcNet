@@ -19,4 +19,5 @@
   <ItemGroup>
     <ProjectReference Include="..\JsonRpcNet\JsonRpcNet.csproj" />
   </ItemGroup>
+
 </Project>

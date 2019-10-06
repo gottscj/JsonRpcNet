@@ -1,22 +1,23 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace JsonRpcNet.Docs
 {
     public static class AppBuilderExtensions
     {
-        public static void AddJsonRpcNetDocs(this IServiceCollection services)
-        {
-            services.ConfigureOptions(typeof(JsonRpcNetDocsConfigureOptions));
-        }
         public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app, string path)
         {
             if (!path.StartsWith("/"))
             {
                 path = "/" + path;
             }
-            
-            app.UseMiddleware(typeof(JsonRpcApiMiddleware), path);
+
+            app.UseFileServer(new FileServerOptions
+            {
+                FileProvider = new ManifestEmbeddedFileProvider(typeof(AppBuilderExtensions).Assembly, "resources"),
+                RequestPath = path,
+                EnableDirectoryBrowsing = true
+            });
 
             return app;
         }
