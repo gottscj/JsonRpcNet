@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net472</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.ValueTuple" Version="4.5.0" />
       <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\JsonRpcNet.Docs\JsonRpcNet.Docs.csproj" />
+      <ProjectReference Include="..\JsonRpcNet.WebSocketSharp\JsonRpcNet.WebSocketSharp.csproj" />
       <ProjectReference Include="..\JsonRpcNet\JsonRpcNet.csproj" />
     </ItemGroup>
 

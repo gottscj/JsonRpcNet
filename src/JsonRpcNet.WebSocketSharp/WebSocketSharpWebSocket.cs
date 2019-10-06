@@ -11,15 +11,19 @@ namespace JsonRpcNet.WebSocketSharp
     public class WebSocketSharpWebSocket : WebSocketBehavior, IWebSocket
     {
         private readonly CancellationToken _cancellationToken;
+        private readonly Func<IWebSocketConnection> _webSocketConnectionFactory;
         private readonly AsyncQueue<(MessageType messageType,ArraySegment<byte> data)> _queue;
         
-        public WebSocketSharpWebSocket(CancellationToken cancellationToken)
+        public WebSocketSharpWebSocket(CancellationToken cancellationToken, Func<IWebSocketConnection> webSocketConnectionFactory)
         {
             _cancellationToken = cancellationToken;
+            _webSocketConnectionFactory = webSocketConnectionFactory;
             _queue = new AsyncQueue<(MessageType messageType, ArraySegment<byte> data)>();
+            Id = Guid.NewGuid().ToString();
         }
-        
-        public string Id => ID;
+
+        public string Id { get; }
+    
         public IPEndPoint UserEndPoint => Context.UserEndPoint;
 
         public JsonRpcWebSocketState WebSocketState
@@ -77,6 +81,13 @@ namespace JsonRpcNet.WebSocketSharp
             {
                 // TODO handle
             }
+        }
+
+        protected override void OnOpen()
+        {
+            _webSocketConnectionFactory
+                .Invoke()
+                .HandleMessagesAsync(this);
         }
 
         protected override void OnClose(CloseEventArgs e)
