@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\JsonRpcNet.Docs\JsonRpcNet.Docs.csproj" />
       <ProjectReference Include="..\JsonRpcNet\JsonRpcNet.csproj" />
     </ItemGroup>
 

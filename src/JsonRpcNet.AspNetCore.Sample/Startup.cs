@@ -34,7 +34,7 @@ namespace JsonRpcNet.AspNetCore.Sample
 
             app.UseJsonRpcApi("help");
             app.UseWebSockets();
-            app.AddJsonRpcHandler<ChatJsonRpcWebSocketService>();
+            app.AddJsonRpcService<ChatJsonRpcWebSocketService>();
 
             DocGenerator.JsonRpcDoc = new JsonRpcDoc
             {

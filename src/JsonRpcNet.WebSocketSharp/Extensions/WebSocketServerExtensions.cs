@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -36,74 +37,27 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 			}
 			server.OnGet += (s, e) =>
 			{
-				if (e.Request.Url.AbsolutePath.Equals(path))
+
+				if (e.Request.Url.AbsolutePath.StartsWith(path)) return;
+				
+				try
 				{
-					using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream( typeof(JsonRpcDoc).Namespace + ".resources.index.html"))
-					{
-						if (stream == null)
-						{
-							return;
-						}
-						e.Response.ContentType = "text/html";
-						e.Response.StatusCode = 200;
-						var bytes = ReadToEnd(stream);
-						e.Response.WriteContent(bytes);
-					}
+					var reader = new EmbeddedFileReader(e.Request.Url.AbsolutePath, path);
+					var bytes = reader.GetEmbeddedFile();
+					e.Response.ContentType = "text/html";
+					e.Response.StatusCode = 200;
+					e.Response.WriteContent(bytes);
 				}
+				catch (Exception exception)
+				{
+					Debug.WriteLine(exception.ToString());
+					e.Response.StatusCode = 404; // not found
+				}
+				
 			};
 		}
 		
-		private static byte[] ReadToEnd(Stream stream)
-		{
-			long originalPosition = 0;
-
-			if(stream.CanSeek)
-			{
-				originalPosition = stream.Position;
-				stream.Position = 0;
-			}
-
-			try
-			{
-				byte[] readBuffer = new byte[4096];
-
-				int totalBytesRead = 0;
-				int bytesRead;
-
-				while ((bytesRead = stream.Read(readBuffer, totalBytesRead, readBuffer.Length - totalBytesRead)) > 0)
-				{
-					totalBytesRead += bytesRead;
-
-					if (totalBytesRead == readBuffer.Length)
-					{
-						int nextByte = stream.ReadByte();
-						if (nextByte != -1)
-						{
-							byte[] temp = new byte[readBuffer.Length * 2];
-							Buffer.BlockCopy(readBuffer, 0, temp, 0, readBuffer.Length);
-							Buffer.SetByte(temp, totalBytesRead, (byte)nextByte);
-							readBuffer = temp;
-							totalBytesRead++;
-						}
-					}
-				}
-
-				byte[] buffer = readBuffer;
-				if (readBuffer.Length != totalBytesRead)
-				{
-					buffer = new byte[totalBytesRead];
-					Buffer.BlockCopy(readBuffer, 0, buffer, 0, totalBytesRead);
-				}
-				return buffer;
-			}
-			finally
-			{
-				if(stream.CanSeek)
-				{
-					stream.Position = originalPosition; 
-				}
-			}
-		}
+		
 
 	}
 }
