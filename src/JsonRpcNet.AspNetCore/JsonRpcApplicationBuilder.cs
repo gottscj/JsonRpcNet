@@ -50,8 +50,7 @@ namespace JsonRpcNet.AspNetCore
                 
                 try
                 {
-                    var reader = new EmbeddedFileReader(context.Request.Path, path);
-                    var bytes = reader.GetEmbeddedFile();
+                    var bytes = EmbeddedFileReader.GetEmbeddedFile(context.Request.Path, path);
                     context.Response.ContentType = "text/html";
                     context.Response.StatusCode = 200;
                     await context.Response.Body.WriteAsync(bytes, 0, bytes.Length);

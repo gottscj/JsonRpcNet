@@ -3,11 +3,9 @@ using System.IO;
 
 namespace JsonRpcNet.Docs
 {
-    public class EmbeddedFileReader
+    public static class EmbeddedFileReader
     {
-        private readonly string _embeddedResource;
-
-        public EmbeddedFileReader(string requestPath, string basePath)
+        public static byte[] GetEmbeddedFile(string requestPath, string basePath)
         {
             string filePath = null;
             if (requestPath.EndsWith("/"))
@@ -23,17 +21,12 @@ namespace JsonRpcNet.Docs
                 filePath = requestPath.Substring(basePath.Length + 1);
                 filePath = filePath.Replace("/", ".");
             }
-            _embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{filePath}";
-        }
-        public byte[] GetEmbeddedFile()
-        {
-            using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream(_embeddedResource))
+            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{filePath}";
+            using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream(embeddedResource))
             {
                 if (stream == null)
                 {
-                    var split = _embeddedResource.Split('.');
-                    var filename = split[split.Length - 2] + "." + split[split.Length - 1];
-                    throw new InvalidOperationException($"File '{filename}' not found");
+                    throw new InvalidOperationException($"No content on path '{requestPath}' found");
                 }
                 return ReadToEnd(stream);
             }

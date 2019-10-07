@@ -42,8 +42,7 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 				
 				try
 				{
-					var reader = new EmbeddedFileReader(e.Request.Url.AbsolutePath, path);
-					var bytes = reader.GetEmbeddedFile();
+					var bytes = EmbeddedFileReader.GetEmbeddedFile(e.Request.Url.AbsolutePath, path);
 					e.Response.ContentType = "text/html";
 					e.Response.StatusCode = 200;
 					e.Response.WriteContent(bytes);
