@@ -5,28 +5,40 @@ namespace JsonRpcNet.Docs
 {
     public static class EmbeddedFileReader
     {
-        public static byte[] GetEmbeddedFile(string requestPath, string basePath)
+        public static string GetFilePath(string requestPath, string basePath)
         {
-            string filePath = null;
-            if (requestPath.EndsWith("/"))
+            string filePath = requestPath;
+            if (filePath.EndsWith("/"))
             {
-                requestPath = requestPath.Substring(0, requestPath.Length - 1);
+				filePath = requestPath.Substring(0, requestPath.Length - 1);
             }
-            if (requestPath.Equals(basePath))
+
+            if (filePath.Equals(basePath))
             {
                 filePath = "index.html";
             }
-            else if (requestPath.StartsWith(basePath))
+            else if (filePath.StartsWith(basePath))
             {
                 filePath = requestPath.Substring(basePath.Length + 1);
-                filePath = filePath.Replace("/", ".");
             }
-            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{filePath}";
+
+			if (filePath.StartsWith("/"))
+			{
+				filePath = filePath.Substring(1);
+			}
+
+            return filePath;
+        }
+
+        public static byte[] GetEmbeddedFile(string filePath)
+        {
+            var resourcePath = filePath.Replace("/", ".");
+            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{resourcePath}";
             using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream(embeddedResource))
             {
                 if (stream == null)
                 {
-                    throw new InvalidOperationException($"No content on path '{requestPath}' found");
+                    throw new InvalidOperationException($"No content was found for file '{filePath}'");
                 }
                 return ReadToEnd(stream);
             }

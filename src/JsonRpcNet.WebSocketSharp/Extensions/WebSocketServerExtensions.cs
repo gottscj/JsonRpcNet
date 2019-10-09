@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using JsonRpcNet.Attributes;
 using JsonRpcNet.Docs;
 using WebSocketSharp;
@@ -37,13 +36,17 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 			}
 			server.OnGet += (s, e) =>
 			{
+				if (!e.Request.Url.AbsolutePath.StartsWith(path) &&
+					e.Request.UrlReferrer != null && e.Request.UrlReferrer.AbsolutePath.EndsWith(path) == false)
+				{
+					return;
+				}
 
-				if (e.Request.Url.AbsolutePath.StartsWith(path)) return;
-				
 				try
 				{
-					var bytes = EmbeddedFileReader.GetEmbeddedFile(e.Request.Url.AbsolutePath, path);
-					e.Response.ContentType = "text/html";
+					var filePath = EmbeddedFileReader.GetFilePath(e.Request.Url.AbsolutePath, path);
+					var bytes = EmbeddedFileReader.GetEmbeddedFile(filePath);
+					e.Response.ContentType = MimeTypeProvider.Get(Path.GetExtension(filePath));
 					e.Response.StatusCode = 200;
 					e.Response.WriteContent(bytes);
 				}

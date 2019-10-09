@@ -1,15 +1,15 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using JsonRpcNet.Attributes;
 using JsonRpcNet.Docs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 
 namespace JsonRpcNet.AspNetCore
 {
-    public static class JsonRpcApplicationBuilder
+	public static class JsonRpcApplicationBuilder
     {
         public static IApplicationBuilder AddJsonRpcService<TJsonRpcWebSocketService>(this IApplicationBuilder app)
             where TJsonRpcWebSocketService : JsonRpcWebSocketService
@@ -40,6 +40,7 @@ namespace JsonRpcNet.AspNetCore
             {
                 path = "/" + path;
             }
+
             app.Use(async (context, next) =>
             {
                 if (!context.Request.Path.Value.StartsWith(path))
@@ -47,11 +48,12 @@ namespace JsonRpcNet.AspNetCore
                     await next.Invoke();
                     return;
                 }
-                
+
                 try
                 {
-                    var bytes = EmbeddedFileReader.GetEmbeddedFile(context.Request.Path, path);
-                    context.Response.ContentType = "text/html";
+                    var filePath = EmbeddedFileReader.GetFilePath(context.Request.Path, path);
+                    var bytes = EmbeddedFileReader.GetEmbeddedFile(filePath);
+                    context.Response.ContentType = MimeTypeProvider.Get(Path.GetExtension(filePath));
                     context.Response.StatusCode = 200;
                     await context.Response.Body.WriteAsync(bytes, 0, bytes.Length);
                 }
