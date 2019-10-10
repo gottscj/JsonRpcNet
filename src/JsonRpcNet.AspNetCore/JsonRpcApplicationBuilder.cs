@@ -1,15 +1,18 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
+using System.Text;
 using JsonRpcNet.Attributes;
 using JsonRpcNet.Docs;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json;
 
 namespace JsonRpcNet.AspNetCore
 {
-	public static class JsonRpcApplicationBuilder
+    public static class JsonRpcApplicationBuilder
     {
         public static IApplicationBuilder AddJsonRpcService<TJsonRpcWebSocketService>(this IApplicationBuilder app)
             where TJsonRpcWebSocketService : JsonRpcWebSocketService
@@ -33,35 +36,27 @@ namespace JsonRpcNet.AspNetCore
 
             return services;
         }
-        
-        public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app, string path)
-        {
-            if (!path.StartsWith("/"))
-            {
-                path = "/" + path;
-            }
 
+        public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app)
+        {
+            return UseJsonRpcApi(app, new JsonRpcInfoDoc());
+        }
+        
+        public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app, JsonRpcInfoDoc jsonRpcInfo)
+        {
             app.Use(async (context, next) =>
             {
-                if (!context.Request.Path.Value.StartsWith(path))
+                var referer = context.Request.GetTypedHeaders().Referer?.AbsolutePath ?? "";
+                var requestPath = referer + context.Request.Path;
+                var file = JsonRpcFileReader.GetFile(requestPath, jsonRpcInfo);
+                if (!file.Exist)
                 {
                     await next.Invoke();
                     return;
                 }
-
-                try
-                {
-                    var filePath = EmbeddedFileReader.GetFilePath(context.Request.Path, path);
-                    var bytes = EmbeddedFileReader.GetEmbeddedFile(filePath);
-                    context.Response.ContentType = MimeTypeProvider.Get(Path.GetExtension(filePath));
-                    context.Response.StatusCode = 200;
-                    await context.Response.Body.WriteAsync(bytes, 0, bytes.Length);
-                }
-                catch (Exception exception)
-                {
-                    Debug.WriteLine(exception.ToString());
-                    context.Response.StatusCode = 404; // not found
-                }
+                context.Response.ContentType = MimeTypeProvider.Get(file.Extension);
+                context.Response.StatusCode = 200;
+                await context.Response.Body.WriteAsync(file.Buffer, 0, file.Buffer.Length);
             });
 
             return app;

@@ -32,28 +32,20 @@ namespace JsonRpcNet.AspNetCore.Sample
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseJsonRpcApi("help");
-            app.UseWebSockets();
-            app.AddJsonRpcService<ChatJsonRpcWebSocketService>();
-
-            DocGenerator.JsonRpcDoc = new JsonRpcDoc
+            app.UseJsonRpcApi(new JsonRpcInfoDoc
             {
+                Description = "Api for JsonRpc chat",
+                Title = "Chat API",
+                Version = "v1",
                 Contact = new ContactDoc
                 {
                     Email = "test@test.com"
-                },
-                GeneralInfo = new JsonRpcInfoDoc
-                {
-                    Description = "Api for JsonRpc chat",
-                    Title = "Chat API",
-                    Version = "v1"
-                },
-                Services = new List<JsonRpcServiceDoc>
-                {
-                    DocGenerator.GenerateJsonRpcServiceDoc<ChatJsonRpcWebSocketService>()
                 }
-            };
+            });
             
+            app.UseWebSockets();
+            app.AddJsonRpcService<ChatJsonRpcWebSocketService>();
+
             var doc = DocGenerator.GenerateJsonRpcServiceDoc<ChatJsonRpcWebSocketService>();
 
             app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });

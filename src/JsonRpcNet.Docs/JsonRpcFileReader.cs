@@ -1,46 +1,64 @@
 using System;
 using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace JsonRpcNet.Docs
 {
-    public static class EmbeddedFileReader
+    public static class JsonRpcFileReader
     {
-        public static string GetFilePath(string requestPath, string basePath)
+        public static FileContent GetFile(string requestPath, JsonRpcInfoDoc info)
         {
-            string filePath = requestPath;
-            if (filePath.EndsWith("/"))
+            var basePath = info?.JsonRpcApiEndpoint ?? "/jsonrpc";
+            string filePath;
+
+            if (!basePath.StartsWith("/"))
             {
-				filePath = requestPath.Substring(0, requestPath.Length - 1);
+                basePath = "/" + basePath;
             }
 
-            if (filePath.Equals(basePath))
+            if (!requestPath.StartsWith(basePath))
+            {
+                return new FileContent();
+            }
+            
+            if (requestPath.EndsWith("/"))
+            {
+                requestPath = requestPath.Substring(0, requestPath.Length - 1);
+            }
+            if (requestPath.EndsWith("jsonRpcApi.json"))
+            {
+                var jsonRpcDoc = DocGenerator.GenerateJsonRpcDoc(info);
+                var doc = JsonConvert.SerializeObject(jsonRpcDoc, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
+                var buffer= Encoding.UTF8.GetBytes(doc);
+                
+                var fileResult = new FileContent(requestPath, buffer);
+                
+                return fileResult;
+            }
+            if (requestPath.Equals(basePath))
             {
                 filePath = "index.html";
             }
-            else if (filePath.StartsWith(basePath))
+            else
             {
                 filePath = requestPath.Substring(basePath.Length + 1);
+                filePath = filePath.Replace("/", ".");
             }
-
-			if (filePath.StartsWith("/"))
-			{
-				filePath = filePath.Substring(1);
-			}
-
-            return filePath;
-        }
-
-        public static byte[] GetEmbeddedFile(string filePath)
-        {
-            var resourcePath = filePath.Replace("/", ".");
-            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{resourcePath}";
+            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{filePath}";
             using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream(embeddedResource))
             {
-                if (stream == null)
+                byte[] buffer = null;
+                if (stream != null)
                 {
-                    throw new InvalidOperationException($"No content was found for file '{filePath}'");
+                    buffer = ReadToEnd(stream);
                 }
-                return ReadToEnd(stream);
+                var fileResult = new FileContent(filePath, buffer);
+                return fileResult;
             }
         }
 

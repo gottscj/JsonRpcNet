@@ -7,7 +7,25 @@ namespace JsonRpcNet.Docs
 {
     public static class DocGenerator
     {
-        public static JsonRpcDoc JsonRpcDoc { get; set; }
+        public static JsonRpcDoc GenerateJsonRpcDoc(JsonRpcInfoDoc info)
+        {
+            var jsonRpcServices = AppDomain
+                .CurrentDomain
+                .GetAssemblies()
+                .SelectMany(a => a.GetTypes().Where(t => !t.IsAbstract && typeof(JsonRpcWebSocketService).IsAssignableFrom(t)))
+                .ToList();
+            
+            var jsonRpcDoc = new JsonRpcDoc
+            {
+                Info = info
+            };
+            foreach (var jsonRpcService in jsonRpcServices)
+            {
+                jsonRpcDoc.Services.Add(GenerateJsonRpcServiceDoc(jsonRpcService));
+            }
+
+            return jsonRpcDoc;
+        }
         public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc<T>()
         {
             return GenerateJsonRpcServiceDoc(typeof(T));

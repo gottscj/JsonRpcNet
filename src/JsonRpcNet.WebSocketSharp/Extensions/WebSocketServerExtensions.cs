@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using JsonRpcNet.Attributes;
@@ -28,34 +26,20 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 			AddJsonRpcService(server, CancellationToken.None, initializer);
 		}
 
-		public static void UseJsonRpcApi(this HttpServer server, string path)
+		public static void UseJsonRpcApi(this HttpServer server, JsonRpcInfoDoc jsonRpcInfo)
 		{
-			if (!path.StartsWith("/"))
-			{
-				path = "/" + path;
-			}
 			server.OnGet += (s, e) =>
 			{
-				if (!e.Request.Url.AbsolutePath.StartsWith(path) &&
-					e.Request.UrlReferrer != null && e.Request.UrlReferrer.AbsolutePath.EndsWith(path) == false)
+				var referer = e.Request.UrlReferrer?.AbsolutePath ?? "";
+				var requestPath = referer + e.Request.Url.AbsolutePath;
+				var file = JsonRpcFileReader.GetFile(requestPath, jsonRpcInfo);
+				if (!file.Exist)
 				{
 					return;
 				}
-
-				try
-				{
-					var filePath = EmbeddedFileReader.GetFilePath(e.Request.Url.AbsolutePath, path);
-					var bytes = EmbeddedFileReader.GetEmbeddedFile(filePath);
-					e.Response.ContentType = MimeTypeProvider.Get(Path.GetExtension(filePath));
-					e.Response.StatusCode = 200;
-					e.Response.WriteContent(bytes);
-				}
-				catch (Exception exception)
-				{
-					Debug.WriteLine(exception.ToString());
-					e.Response.StatusCode = 404; // not found
-				}
-				
+				e.Response.ContentType = MimeTypeProvider.Get(file.Extension);
+				e.Response.StatusCode = 200;
+				e.Response.WriteContent(file.Buffer);
 			};
 		}
 		
