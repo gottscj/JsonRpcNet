@@ -1,0 +1,33 @@
+{
+    "info": {
+        "description": "Api for JsonRpc chat",
+        "version": "v1",
+        "title": "Chat API",
+        "contact": {
+            "name": "",
+            "email": "test@test.com",
+            "url": ""
+        },
+        "jsonRpcApiEndpoint": "/jsonrpc"
+    },
+    "services": [
+        {
+            "name": "ChatService",
+            "path": "/chat",
+            "description": "Chat hub",
+            "methods": [
+                {
+                    "name": "SendMessage",
+                    "description": "Sends a message to the chat",
+                    "returns": "Void",
+                    "parameters": [
+                        {
+                            "name": "message",
+                            "type": "String"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

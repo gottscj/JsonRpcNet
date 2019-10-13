@@ -8,6 +8,7 @@ namespace JsonRpcNet.Docs
 {
     public static class JsonRpcFileReader
     {
+		const string staticResourcesPath = "web.dist";
         public static FileContent GetFile(string requestPath, JsonRpcInfoDoc info)
         {
             var basePath = info?.JsonRpcApiEndpoint ?? "/jsonrpc";
@@ -49,7 +50,7 @@ namespace JsonRpcNet.Docs
                 filePath = requestPath.Substring(basePath.Length + 1);
                 filePath = filePath.Replace("/", ".");
             }
-            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.resources.{filePath}";
+            var embeddedResource = $"{typeof(JsonRpcDoc).Namespace}.{staticResourcesPath}.{filePath}";
             using (var stream = typeof(JsonRpcDoc).Assembly.GetManifestResourceStream(embeddedResource))
             {
                 byte[] buffer = null;
