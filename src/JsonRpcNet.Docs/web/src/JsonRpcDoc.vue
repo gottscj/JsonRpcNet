@@ -1,23 +1,26 @@
 <template>
   <div id="JsonRpcDocs">
-    <ApiDoc v-bind:apiInfo="apiInfo" />
+    <ApiInfo v-bind:apiInfo="apiInfo.info" />
+    <!--TODO: Do a for loop on the services-->
+    <ApiService v-bind:service="apiInfo.services[0]" />
   </div>
 </template>
 
 <script>
-import ApiDoc from "./components/ApiDoc.vue";
+import ApiInfo from "./components/ApiInfo.vue";
+import ApiService from "./components/ApiService.vue";
 
 export default {
   name: "JsonRpcDocs",
   components: {
-    ApiDoc
+    ApiInfo,
+    ApiService
   },
   data: function() {
     return {
       apiInfo: {
-        info: {
-          title: ""
-        }
+        info: {},
+        services: []
       }
     };
   },
@@ -35,20 +38,10 @@ export default {
     }
   },
   mounted() {
-    //   return this.$http.get("./jsonRpcApi.json").then(response => this.apiInfo = response.data);
-    // }
     this.readTextFile("./jsonRpcApi.json", text => {
       this.apiInfo = JSON.parse(text);
     });
   }
-  // asyncComputed: {
-  //   apiInfo2() {
-  //     return this.$http.get("./jsonRpcApi.json").then(response => {
-  //       // console.log(response)
-  //       //this.apiInfo = response.data;
-  //     });
-  //   }
-  // }
 };
 </script>
 
@@ -57,8 +50,6 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin: 20px;
 }
 </style>

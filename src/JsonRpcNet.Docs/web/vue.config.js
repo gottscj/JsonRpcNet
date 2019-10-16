@@ -1,4 +1,12 @@
 module.exports = {
+    productionSourceMap: false,
+    css: {
+        loaderOptions: {
+            sass: {
+                prependData: `@import "./src/assets/theme.scss";`
+            }
+        }
+    },
     chainWebpack: config => {
         config.plugin('copy').tap(options => {
             if (process.env.NODE_ENV === "production") {
@@ -6,6 +14,5 @@ module.exports = {
             }
             return options;
         })
-    },
-    productionSourceMap: false
+    }
 }
