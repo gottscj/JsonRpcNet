@@ -1,15 +1,14 @@
 <template>
   <div id="ApiInfo">
     <div class="api-title">
-      {{ apiInfo.title }}
+      {{ info.title }}
       <small>
-        <pre class="api-version">{{ apiInfo.version }}</pre>
+        <pre class="api-version">{{ info.version }}</pre>
       </small>
     </div>
-    <div class="api-endpoint">
-      [ Endpoint: {{ apiInfo.jsonRpcApiEndpoint }} ]
-    </div>
-    <div class="api-description">{{ apiInfo.description }}</div>
+    <div class="api-endpoint">[ Endpoint: {{ info.jsonRpcApiEndpoint }} ]</div>
+    <!-- TODO: add contact -->
+    <div class="api-description">{{ info.description }}</div>
   </div>
 </template>
 
@@ -17,7 +16,7 @@
 export default {
   name: "ApiInfo",
   props: {
-    apiInfo: {
+    info: {
       description: String,
       version: String,
       title: String,
@@ -35,6 +34,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 #ApiInfo {
+  margin-bottom: 50px;
+
   .api-title {
     color: map-get($primary-color, 500);
     font-size: 36px;
@@ -50,13 +51,13 @@ export default {
       padding: 2px 8px;
       vertical-align: super;
       border-radius: 57px;
-      background: map-get($secondary-color, 400);
+      background: map-get($secondary-color, 500);
 
       pre {
         margin: 0;
         padding: 1px;
         font-family: sans-serif;
-        color: map-get($secondary-color, 50);
+        color: $light-text;
         font-size: 14px;
       }
     }

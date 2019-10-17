@@ -1,8 +1,9 @@
 <template>
   <div id="JsonRpcDocs">
-    <ApiInfo v-bind:apiInfo="apiInfo.info" />
-    <!--TODO: Do a for loop on the services-->
-    <ApiService v-bind:service="apiInfo.services[0]" />
+    <ApiInfo v-bind:info="apiInfo.info" />
+    <div v-for="service in apiInfo.services" v-bind:key="service.path">
+      <ApiService v-bind:service="service" />
+    </div>
   </div>
 </template>
 
