@@ -55,6 +55,7 @@ export default {
   color: map-get($primary-color, 400);
 
   .accordion {
+    font-family: inherit;
     background-color: map-get($primary-color, 30);
     color: inherit;
     cursor: pointer;
@@ -70,6 +71,7 @@ export default {
   }
 
   .panel {
+    font-family: inherit;
     padding: 20px;
     //background-color: map-get($primary-color, 30);
     overflow: hidden;

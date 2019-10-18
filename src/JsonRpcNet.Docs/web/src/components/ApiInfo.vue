@@ -39,7 +39,6 @@ export default {
   .api-title {
     color: map-get($primary-color, 500);
     font-size: 36px;
-    font-family: sans-serif;
     font-weight: bold;
 
     small {
@@ -56,7 +55,6 @@ export default {
       pre {
         margin: 0;
         padding: 1px;
-        font-family: sans-serif;
         color: $light-text;
         font-size: 14px;
       }
@@ -67,13 +65,13 @@ export default {
     font-size: 12px;
     font-weight: 300 !important;
     margin: 0;
-    font-family: monospace;
     font-weight: 600;
     color: map-get($secondary-color, 400);
   }
 
   .api-description {
     margin: 10px;
+    font-size: 16px;
   }
 }
 </style>

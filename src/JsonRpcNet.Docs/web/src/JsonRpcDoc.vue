@@ -48,7 +48,7 @@ export default {
 
 <style lang="scss">
 #JsonRpcDocs {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: $font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 20px;
