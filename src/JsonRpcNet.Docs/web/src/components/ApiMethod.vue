@@ -8,80 +8,48 @@
       <div class="method-name">{{ method.name }}</div>
       <div class="method-description">{{ method.description }}</div>
     </button>
-    <!--TODO: Move parameters to another component and add syntax highlighting -->
     <div v-if="expanded" class="panel">
       <div class="method-subtitle">
         Parameters
       </div>
-      <textarea
-        class="method-parameters-code"
-        v-model="parameters"
-        placeholder="add multiple lines"
-        v-bind:style="{
-          'font-size': parameterCodeFontSizePx,
-          height: parametersCodeHeightPx
-        }"
+      <ApiMethodParameters
+        v-bind:parameters="method.parameters"
+        v-on:parametersChanged="onParametersChanged"
       />
     </div>
   </div>
 </template>
 
 <script>
+import ApiMethodParameters from "./ApiMethodParameters.vue";
+
 export default {
   name: "ApiMethod",
+  components: {
+    ApiMethodParameters
+  },
   data: function() {
     return {
       expanded: false,
       accordionBorderRadius: "5px",
-      parameters: "",
-      parametersCodeFontSize: 14,
-      parametersCodeHeight: 100
+      parametersJson: ""
     };
   },
   props: {
     method: {
-      name: "string",
-      description: "string",
-      returns: "string",
-      parameters: [
-        {
-          name: "string",
-          type: "string"
-        }
-      ]
+      name: String,
+      description: String,
+      returns: String,
+      parameters: Array
     }
-  },
-  mounted() {
-    this.parameters = this.createParametersJsonTemplate();
   },
   methods: {
     toggleAccordion() {
       this.expanded = !this.expanded;
       this.accordionBorderRadius = this.expanded ? "5px 5px 0px 0px" : "5px";
     },
-    createParametersJsonTemplate() {
-      let parametersJson = "{\n";
-      let indent = "  ";
-
-      const params = [];
-      this.method.parameters.forEach(param => {
-        params.push(`${indent}${param.name}: "${param.type}"`);
-      });
-      parametersJson += params.join(",\n");
-      parametersJson += "\n}";
-
-      this.parametersCodeHeight =
-        (this.parametersCodeFontSize + 4) * (this.method.parameters.length + 2);
-
-      return parametersJson;
-    }
-  },
-  computed: {
-    parameterCodeFontSizePx: function() {
-      return `${this.parametersCodeFontSize}px`;
-    },
-    parametersCodeHeightPx: function() {
-      return `${this.parametersCodeHeight}px`;
+    onParametersChanged(value) {
+      this.parametersJson = value;
     }
   }
 };
@@ -152,11 +120,6 @@ export default {
     font-size: 14px;
     color: map-get($secondary-color, 500);
     background: map-get($secondary-color, 50);
-  }
-
-  .method-parameters-code {
-    margin: 10px;
-    width: 400px;
   }
 }
 </style>
