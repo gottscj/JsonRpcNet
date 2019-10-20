@@ -19,7 +19,7 @@ namespace JsonRpcNet.Docs
             Parameters = methodInfo.GetParameters()
                 .Select(p => new JsonRpcParameterDoc {Name = p.Name, Type = p.ParameterType.Name}).ToList();
         }
-        public string Name { get; }
+        public string Name { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Returns { get; }
         public IList<JsonRpcParameterDoc> Parameters { get; }

@@ -13,7 +13,7 @@
     </button>
     <div class="panel" v-bind:style="{ display: panelDisplay }">
       <div v-for="method in service.methods" v-bind:key="method.name">
-        <ApiMethod v-bind:method="method" />
+        <ApiMethod class="service-method" v-bind:method="method" />
       </div>
     </div>
   </div>
@@ -72,7 +72,7 @@ export default {
 
   .panel {
     font-family: inherit;
-    padding: 20px;
+    padding: 10px;
     //background-color: map-get($primary-color, 30);
     overflow: hidden;
   }
@@ -105,6 +105,10 @@ export default {
   .service-arrow {
     height: 15px;
     padding: 10px 10px 0px 10px;
+  }
+
+  .service-method {
+    padding: 5px;
   }
 }
 </style>

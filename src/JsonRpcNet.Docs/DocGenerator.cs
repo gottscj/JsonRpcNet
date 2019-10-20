@@ -53,6 +53,7 @@ namespace JsonRpcNet.Docs
 
             serviceDoc.Methods = methodMetaData.Select(m => new JsonRpcMethodDoc(m.MethonInfo)
             {
+                Name = m.Attribute.Name,
                 Description = m.Attribute.Description
             }).ToList();
 

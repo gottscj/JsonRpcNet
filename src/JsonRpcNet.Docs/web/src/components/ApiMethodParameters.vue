@@ -9,10 +9,7 @@
       v-model="parametersJson"
       placeholder="json parameters"
       @change="emitParametersChange"
-      v-bind:style="{
-        'font-size': parameterCodeFontSizePx,
-        height: parametersCodeHeightPx
-      }"
+      v-bind:rows="parametersCodeRows"
     />
     <div v-if="!!jsonError" class="method-parameters-error">
       {{ jsonError }}
@@ -26,8 +23,7 @@ export default {
   data: function() {
     return {
       parametersJson: "",
-      parametersCodeFontSize: 14,
-      parametersCodeHeight: 100,
+      parametersCodeRows: 1,
       jsonError: null
     };
   },
@@ -40,20 +36,14 @@ export default {
   },
   methods: {
     createParametersJsonTemplate() {
-      let parametersJson = "{\n";
-      let indent = "  ";
-
-      const params = [];
+      let parametersJson = {};
       this.parameters.forEach(param => {
-        params.push(`${indent}"${param.name}": "${param.type}"`);
+        parametersJson[param.name] = param.type;
       });
-      parametersJson += params.join(",\n");
-      parametersJson += "\n}";
 
-      this.parametersCodeHeight =
-        (this.parametersCodeFontSize + 4) * (this.parameters.length + 2);
+      this.parametersCodeRows = this.parameters.length + 2;
 
-      return parametersJson;
+      return JSON.stringify(parametersJson, null, 2);
     },
     emitParametersChange() {
       this.jsonError = null;
@@ -67,29 +57,19 @@ export default {
 
       this.$emit("parametersChanged", paramJson);
     }
-  },
-  computed: {
-    parameterCodeFontSizePx: function() {
-      return `${this.parametersCodeFontSize}px`;
-    },
-    parametersCodeHeightPx: function() {
-      return `${this.parametersCodeHeight}px`;
-    }
   }
 };
 </script>
 
 <style scoped lang="scss">
 #ApiMethodParameters {
-  margin: 10px;
-
   .method-parameters-code-ok {
-    width: 400px;
+    width: 800px;
     border-color: map-get($secondary-color, A200);
   }
 
   .method-parameters-code-error {
-    width: 400px;
+    width: 800px;
     border-color: $error-color;
   }
 

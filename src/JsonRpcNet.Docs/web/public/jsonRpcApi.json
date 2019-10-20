@@ -26,6 +26,17 @@
                             "type": "String"
                         }
                     ]
+                },
+                {
+                    "name": "SendMessageEcho",
+                    "description": "Sends a message to the chat and get and echo back",
+                    "returns": "String",
+                    "parameters": [
+                        {
+                            "name": "message",
+                            "type": "String"
+                        }
+                    ]
                 }
             ]
         }

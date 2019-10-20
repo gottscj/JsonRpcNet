@@ -1,10 +1,8 @@
 <template>
   <div id="ApiInfo">
     <div class="api-title">
-      {{ info.title }}
-      <small>
-        <pre class="api-version">{{ info.version }}</pre>
-      </small>
+      <!-- eslint-disable-next-line -->
+      {{ info.title }}<small><pre class="api-version">{{ info.version }}</pre></small>
     </div>
     <div class="api-endpoint">[ Endpoint: {{ info.jsonRpcApiEndpoint }} ]</div>
     <!-- TODO: add contact -->
@@ -31,7 +29,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 #ApiInfo {
   margin-bottom: 50px;
