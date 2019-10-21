@@ -15,32 +15,13 @@
           v-bind:parameters="method.parameters"
           v-on:parametersChanged="onParametersChanged"
         />
-        <!-- TODO: put button on its own component -->
-        <div class="call-method">
-          <template v-if="showCallInProgressLoader">
-            <div class="call-method-loader-box">
-              <div class="call-method-loader" />
-            </div>
-          </template>
-          <template v-else>
-            <a class="call-method-button" @click="callMethod" href="#">
-              <div class="face-primary">Try me!</div>
-              <div class="face-secondary">Go!</div>
-            </a>
-          </template>
-          <div v-if="websocketTriedToConnect" class="call-method-status">
-            <div v-if="websocketError" class="call-method-error">
-              <img class="call-method-status-icon" src="../assets/error.svg" />
-              {{ websocketError }}
-            </div>
-            <div v-else class="call-method-success">
-              <img
-                class="call-method-status-icon"
-                src="../assets/success.svg"
-              />
-            </div>
-          </div>
-        </div>
+        <ActionButtonWithStatus
+          text="Try me!"
+          hoverText="Go!"
+          v-bind:status="callStatus"
+          v-bind:statusText="callStatusText"
+          @click="callMethod"
+        />
       </div>
       <!--TODO: create json text area component shared among parameters and response -->
       <div v-if="hasResponse" class="method-subtitle">Response</div>
@@ -64,24 +45,25 @@
 
 <script>
 import ApiMethodParameters from "./ApiMethodParameters.vue";
+import ActionButtonWithStatus from "./ActionButtonWithStatus.vue";
 import * as ws from "jsonrpc-client-websocket";
 
 export default {
   name: "ApiMethod",
   components: {
-    ApiMethodParameters
+    ApiMethodParameters,
+    ActionButtonWithStatus
   },
   data: function() {
     return {
       expanded: false,
       accordionBorderRadius: "5px",
       parametersJson: "",
-      websocketError: null,
       websocketResponseOk: null,
       websocketResponseError: null,
-      websocketTriedToConnect: false,
-      showCallInProgressLoader: false,
-      callInProgress: false
+      callInProgress: false,
+      callStatus: "none",
+      callStatusText: null
     };
   },
   props: {
@@ -104,14 +86,15 @@ export default {
       if (this.callInProgress) return;
 
       this.callInProgress = true;
+      this.callStatus = "none";
+      this.callStatusText = null;
+
       var timeout = setTimeout(() => {
-        this.showCallInProgressLoader = true;
+        this.callStatus = "loading";
       }, 1000);
 
-      this.websocketError = null;
       this.websocketResponseOk = null;
       this.websocketResponseError = null;
-      this.websocketTriedToConnect = false;
 
       // TODO: provide base url
       const websocket = new ws.JsonRpcWebsocket(
@@ -122,22 +105,24 @@ export default {
       try {
         await websocket.open();
       } catch (error) {
-        this.websocketError = "Failed to establish connection";
+        this.callStatusText = "Failed to establish connection";
       }
 
       this.websocketTriedToConnect = true;
 
       if (websocket.state !== ws.WebsocketReadyStates.OPEN) {
         clearTimeout(timeout);
-        this.callInProgress = this.showCallInProgressLoader = false;
+        this.callInProgress = false;
+        this.callStatus = "error";
         return;
       }
 
       if (!this.hasResponse) {
         websocket.notify(this.method.name, this.parametersJson);
         clearTimeout(timeout);
-        this.callInProgress = this.showCallInProgressLoader = false;
         websocket.close();
+        this.callInProgress = false;
+        this.callStatus = "ok";
       } else {
         websocket
           .call(this.method.name, this.parametersJson)
@@ -145,13 +130,15 @@ export default {
             this.websocketResponseOk = JSON.stringify(response, null, 2);
             websocket.close();
             clearTimeout(timeout);
-            this.callInProgress = this.showCallInProgressLoader = false;
+            this.callInProgress = false;
+            this.callStatus = "ok";
           })
           .catch(error => {
             this.websocketResponseError = JSON.stringify(error, null, 2);
             websocket.close();
             clearTimeout(timeout);
-            this.callInProgress = this.showCallInProgressLoader = false;
+            this.callInProgress = false;
+            this.callStatus = "ok";
           });
       }
     }
@@ -244,112 +231,6 @@ export default {
 
   .method-parameters {
     margin: 10px;
-  }
-
-  .call-method {
-    height: 40px;
-    display: inline-block;
-    vertical-align: middle;
-    $height: 30px;
-    $width: 100px;
-    $buttonColor: map-get($accent-color, 500);
-
-    .call-method-button {
-      margin: 10px 0px 0px 0px;
-
-      height: $height;
-      width: $width;
-      display: inline-block;
-      vertical-align: middle;
-      border: 1px solid $buttonColor;
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-      text-decoration: none;
-      color: $buttonColor;
-      overflow: hidden;
-      border-radius: 5px;
-
-      -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-      -moz-user-select: none; /* Old versions of Firefox */
-      -ms-user-select: none; /* Internet Explorer/Edge */
-      user-select: none; /* Non-prefixed version, currently
-                            supported by Chrome, Opera and Firefox */
-
-      .face-primary,
-      .face-secondary {
-        display: block;
-        line-height: $height;
-        transition: margin 0.2s;
-      }
-
-      .face-primary {
-        background-color: $buttonColor;
-        color: $light-text;
-      }
-
-      .face-secondary {
-        background-color: map-get($accent-color, 50);
-      }
-
-      .face-secondary:active {
-        background-color: map-get($accent-color, 100);
-      }
-
-      &:hover .face-primary {
-        margin-top: -$height;
-      }
-    }
-
-    .call-method-status {
-      display: inline-block;
-      vertical-align: middle;
-      margin: 10px 0px 0px 10px;
-    }
-
-    .call-method-error {
-      color: $error-color;
-      vertical-align: middle;
-    }
-
-    .call-method-status-icon {
-      vertical-align: middle;
-      height: 20px;
-    }
-
-    .call-method-loader-box {
-      margin: 10px 0px 0px 0px;
-      width: $width;
-      height: $height;
-      display: inline-block;
-      vertical-align: middle;
-      border: 1px solid $buttonColor;
-      overflow: hidden;
-      border-radius: 5px;
-      background-color: map-get($accent-color, 100);
-
-      .call-method-loader {
-        margin: 2px 0px 0px 37px;
-        border: 3px solid map-get($accent-color, 500);
-        border-top: 3px solid map-get($primary-color, 500);
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        animation: spin 1s linear infinite;
-        display: inline-block;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    }
   }
 
   .websocket-response {
