@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JsonRpcNet.Attributes;
 
 namespace JsonRpcNet.AspNetCore.Sample
 {
+    public class UserAddedEventArgs : EventArgs
+    {
+        public string UserName { get; set; }
+    }
     [JsonRpcService("chat", Description = "Chat hub", Name = "ChatService")]
     public class ChatJsonRpcWebSocketService : JsonRpcWebSocketService
     {
+        public event EventHandler<UserAddedEventArgs> UserAdded;
+        
         [JsonRpcMethod("SendMessage", Description = "Sends a message to the chat")]
         public void SendMessage(string message)
         {
@@ -25,6 +29,12 @@ namespace JsonRpcNet.AspNetCore.Sample
         protected override Task OnBinaryMessage(ArraySegment<byte> buffer)
         {
             throw new NotImplementedException();
+        }
+
+        protected override Task OnConnected()
+        {
+            UserAdded?.Invoke(this, new UserAddedEventArgs{UserName = "Hello world"});
+            return base.OnConnected();
         }
     }
 }

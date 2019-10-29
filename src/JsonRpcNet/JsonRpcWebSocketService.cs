@@ -13,11 +13,38 @@ namespace JsonRpcNet
 		private static readonly JsonRpcMethodCache MethodCache = new JsonRpcMethodCache();
 		
 		private const string TokenQueryString = "token";
-
-		protected JsonRpcWebSocketService() 
+		
+		protected JsonRpcWebSocketService()
 		{
+			try
+			{
+				var events = GetType().GetEvents(BindingFlags.Instance | BindingFlags.Public);
+				foreach (var eventInfo in events)
+				{
+					eventInfo
+						.AddEventHandler(this, EventProxy.Create(eventInfo, e => InvokeNotification(eventInfo, e)));
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+			
 		}
 
+		private void InvokeNotification(EventInfo eventInfo, EventArgs data)
+		{
+			var notificationObject = new JObject
+			{
+				["jsonrpc"] = "2.0",
+				["method"] = eventInfo.Name,
+				["params"] = JsonConvert.SerializeObject(data, JsonRpcContract.SerializerSettings)
+			};
+			SendAsync(notificationObject.ToString())
+				.ContinueWith(t => Console.WriteLine("Notification send result: " + t.Status));
+		}
+		
 		protected Task SendAsync(JsonRpcContract jsonRpc)
 		{
 			return SendAsync(jsonRpc.ToJson());
