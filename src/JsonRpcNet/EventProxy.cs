@@ -13,7 +13,7 @@ namespace JsonRpcNet
             var handlerType = evt.EventHandlerType;
             var eventParams = handlerType.GetMethod("Invoke").GetParameters();
 
-            //lambda: (object x0, ExampleEventArgs x1) => d(x1.IntArg)
+            //lambda: (object x0, ExampleEventArgs x1) => d(x1)
             var parameters = eventParams.Select(p => Expression.Parameter(p.ParameterType, "x")).ToArray();
             if (!typeof(EventArgs).IsAssignableFrom(parameters[1].Type))
             {

@@ -45,8 +45,8 @@ namespace JsonRpcNet.AspNetCore.Sample
             
             app.UseWebSockets();
             app.AddJsonRpcService<ChatJsonRpcWebSocketService>();
-
-            var doc = DocGenerator.GenerateJsonRpcServiceDoc<ChatJsonRpcWebSocketService>();
+            var doc = new JsonRpcDoc();
+            var serviceDoc = DocGenerator.GenerateJsonRpcServiceDoc(typeof(ChatJsonRpcWebSocketService), doc);
 
             app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });
         }

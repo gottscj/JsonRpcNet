@@ -7,7 +7,7 @@ namespace JsonRpcNet.Docs
 {
     public class JsonRpcMethodDoc
     {
-        public JsonRpcMethodDoc(MethodInfo methodInfo)
+        public JsonRpcMethodDoc(MethodInfo methodInfo, ParameterInfo[] parameters)
         {
             if (methodInfo == null)
             {
@@ -16,9 +16,27 @@ namespace JsonRpcNet.Docs
             Name = methodInfo.Name;
             Returns = methodInfo.ReturnType.Name;
             
-            Parameters = methodInfo.GetParameters()
-                .Select(p => new JsonRpcParameterDoc {Name = p.Name, Type = p.ParameterType.Name}).ToList();
+            Parameters = parameters
+                .Select(p =>
+                {
+                    var typeCode = Type.GetTypeCode(p.ParameterType);
+                    object type = "";
+                    if (typeCode == TypeCode.Object)
+                    {
+                        type = new Dictionary<string, string>
+                        {
+                            ["$ref"] = $"#definitions/{p.Name}"
+                        };
+                    }
+                    else
+                    {
+                       type = typeCode.ToString();
+                    }
+                    return new JsonRpcParameterDoc
+                            {Name = p.Name, Type = type};
+                }).ToList();
         }
+        
         public string Name { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Returns { get; }

@@ -37,8 +37,51 @@
                             "type": "String"
                         }
                     ]
+                },
+                {
+                    "name": "AddUser",
+                    "description": "Add a user to the chat",
+                    "returns": "Void",
+                    "parameters": [
+                        {
+                            "name": "request",
+                            "type": {
+                                "$ref": "#definitions/request"
+                            }
+                        }
+                    ]
                 }
             ]
         }
-    ]
+    ],
+    "definitions": {
+        "request": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "TimeStamp": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "UserType": {
+                    "type": "string",
+                    "enum": [
+                        "Admin",
+                        "NonAdmin"
+                    ]
+                }
+            },
+            "required": [
+                "Id",
+                "Name",
+                "TimeStamp",
+                "UserType"
+            ]
+        }
+    }
 }

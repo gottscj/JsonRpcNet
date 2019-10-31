@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using JsonRpcNet.Attributes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema.Generation;
 
 namespace JsonRpcNet.Docs
 {
@@ -21,16 +23,13 @@ namespace JsonRpcNet.Docs
             };
             foreach (var jsonRpcService in jsonRpcServices)
             {
-                jsonRpcDoc.Services.Add(GenerateJsonRpcServiceDoc(jsonRpcService));
+                jsonRpcDoc.Services.Add(GenerateJsonRpcServiceDoc(jsonRpcService, jsonRpcDoc));
             }
 
             return jsonRpcDoc;
         }
-        public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc<T>()
-        {
-            return GenerateJsonRpcServiceDoc(typeof(T));
-        }
-        public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc(Type type)
+        
+        public static JsonRpcServiceDoc GenerateJsonRpcServiceDoc(Type type, JsonRpcDoc jsonRpcDoc)
         {
             var serviceAttribute =
                 (JsonRpcServiceAttribute) type.GetCustomAttribute(typeof(JsonRpcServiceAttribute));
@@ -47,15 +46,32 @@ namespace JsonRpcNet.Docs
                 .Select(m => new
                 {
                     Attribute = (JsonRpcMethodAttribute) m.GetCustomAttribute(typeof(JsonRpcMethodAttribute)),
-                    MethonInfo = m
+                    MethodInfo = m
                 })
                 .ToList();
-
-            serviceDoc.Methods = methodMetaData.Select(m => new JsonRpcMethodDoc(m.MethonInfo)
+            var generator = new JSchemaGenerator
             {
-                Name = m.Attribute.Name,
-                Description = m.Attribute.Description
-            }).ToList();
+                SchemaLocationHandling = SchemaLocationHandling.Definitions,
+                GenerationProviders = { new StringEnumGenerationProvider()},
+                DefaultRequired = Required.Always,
+                SchemaPropertyOrderHandling = SchemaPropertyOrderHandling.Alphabetical
+            };
+            
+            foreach (var m in methodMetaData)
+            {
+                var parameters = m.MethodInfo.GetParameters();
+                
+                foreach (var parameterInfo in parameters.Where(p => Type.GetTypeCode(p.ParameterType) == TypeCode.Object))
+                {
+                    var schema = generator.Generate(parameterInfo.ParameterType);
+                    jsonRpcDoc.Definitions[parameterInfo.Name] = schema;
+                }
+                serviceDoc.Methods.Add(new JsonRpcMethodDoc(m.MethodInfo, parameters)
+                {
+                    Name = m.Attribute.Name,
+                    Description = m.Attribute.Description
+                });
+            }
 
             return serviceDoc;
         }
