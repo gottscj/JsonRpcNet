@@ -19,7 +19,7 @@
         {{ statusText }}
       </div>
       <div v-if="status === 'loading'">
-        <div class="action-button-loader" />
+        <div class="action-button-spinner" />
       </div>
     </div>
   </div>
@@ -40,11 +40,6 @@ export default {
       validator: function(value) {
         return ["none", "loading", "ok", "error"].indexOf(value) !== -1;
       }
-    }
-  },
-  methods: {
-    emitClick() {
-      this.$emit("click");
     }
   }
 };
@@ -156,7 +151,7 @@ export default {
                           supported by Chrome, Opera and Firefox */
   }
 
-  .action-button-loader {
+  .action-button-spinner {
     vertical-align: middle;
     margin: 2px 0px 0px 0px;
     border: 3px solid map-get($secondary-color, 800);

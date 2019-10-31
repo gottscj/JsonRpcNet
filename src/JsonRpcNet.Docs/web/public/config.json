@@ -1,0 +1,16 @@
+{
+  "servers": [
+    {
+      "name": "ASP.Net Core",
+      "url": "http://localhost:54624",
+      "ws": "ws://localhost:54624",
+      "docs": "jsonrpc/jsonRpcApi.json"
+    },
+    {
+      "name": "Net742",
+      "url": "http://localhost:5000",
+      "ws": "ws://localhost:5000",
+      "docs": "jsonrpc/jsonRpcApi.json"
+    }
+  ]
+}

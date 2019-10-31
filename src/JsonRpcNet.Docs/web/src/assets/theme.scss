@@ -1,4 +1,4 @@
-// generated using http://mcg.mbitson.com/
+// color palettes generated using http://mcg.mbitson.com/
 
 $font-family: monospace;
 
@@ -54,4 +54,12 @@ $accent-color: (
     A200: #a0ffc2,
     A400: #6dffa2,
     A700: #53ff91,
-)
+);
+
+// bootstrap
+$theme-colors: (
+  'primary': map-get($primary-color, 500),
+);
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../../node_modules/bootstrap-vue/src/index.scss';
+

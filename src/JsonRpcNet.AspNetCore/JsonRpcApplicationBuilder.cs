@@ -46,7 +46,7 @@ namespace JsonRpcNet.AspNetCore
         {
             app.Use(async (context, next) =>
             {
-                var referer = context.Request.GetTypedHeaders().Referer?.AbsolutePath ?? "";
+                var referer = SanitizeReferer(context.Request.GetTypedHeaders().Referer?.AbsolutePath ?? "");
                 var requestPath = referer + context.Request.Path;
                 var file = JsonRpcFileReader.GetFile(requestPath, jsonRpcInfo);
                 if (!file.Exist)
@@ -60,6 +60,15 @@ namespace JsonRpcNet.AspNetCore
             });
 
             return app;
+        }
+
+        private static string SanitizeReferer(string referer)
+        {
+            if (referer.EndsWith("/"))
+            {
+                return referer.Substring(0, referer.Length - 1);
+            }
+            return referer;
         }
     }
     

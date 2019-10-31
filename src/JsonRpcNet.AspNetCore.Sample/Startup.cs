@@ -21,6 +21,18 @@ namespace JsonRpcNet.AspNetCore.Sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+            });
+
             services.AddWebSocketHandlers();
         }
 
@@ -31,6 +43,8 @@ namespace JsonRpcNet.AspNetCore.Sample
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("AllowAll");
 
             app.UseJsonRpcApi(new JsonRpcInfoDoc
             {
