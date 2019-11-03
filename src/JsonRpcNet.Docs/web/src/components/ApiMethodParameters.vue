@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import { ParameterTypeService } from "../services/ParameterType.service";
+
 export default {
   name: "ApiMethodParameters",
   data: function() {
@@ -38,12 +40,17 @@ export default {
     createParametersJsonTemplate() {
       let parametersJson = {};
       this.parameters.forEach(param => {
-        parametersJson[param.name] = param.type;
+        // eslint-disable-next-line
+        parametersJson[param.name] = ParameterTypeService.getProvider().unrollParameterType(
+          typeof param.type === "object" ? param.type : { type: param.type }
+        );
       });
 
-      this.parametersCodeRows = this.parameters.length + 2;
+      let parametersTemplate = JSON.stringify(parametersJson, null, 2);
 
-      return JSON.stringify(parametersJson, null, 2);
+      this.parametersCodeRows = parametersTemplate.split("\n").length;
+
+      return parametersTemplate;
     },
     emitParametersChange() {
       this.jsonError = null;

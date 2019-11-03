@@ -46,6 +46,7 @@
 import ApiInfo from "./components/ApiInfo.vue";
 import ApiService from "./components/ApiService.vue";
 import { BFormSelect, BNavbar, BNavbarNav, BNavbarBrand } from "bootstrap-vue";
+import { ParameterTypeService } from "./services/ParameterType.service";
 
 export default {
   name: "JsonRpcDocs",
@@ -63,7 +64,8 @@ export default {
       apiInfoErrorMessage: void 0,
       apiInfo: {
         info: {},
-        services: []
+        services: [],
+        definitions: {}
       },
       selectedServer: null,
       servers: [
@@ -73,7 +75,8 @@ export default {
           ws: String,
           docs: String
         }
-      ]
+      ],
+      parameterTypeService: ParameterTypeService
     };
   },
   methods: {
@@ -107,6 +110,9 @@ export default {
         docUrl,
         text => {
           this.apiInfo = JSON.parse(text);
+          this.parameterTypeService = ParameterTypeService.initialize(
+            this.apiInfo
+          );
         },
         errorText => {
           this.apiInfoErrorMessage =
