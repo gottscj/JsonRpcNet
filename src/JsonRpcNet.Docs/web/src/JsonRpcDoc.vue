@@ -1,8 +1,43 @@
 <template>
   <div id="JsonRpcDocs">
-    <ApiInfo v-bind:info="apiInfo.info" />
-    <div v-for="service in apiInfo.services" v-bind:key="service.path">
-      <ApiService v-bind:service="service" />
+    <BNavbar class="navBar">
+      <BNavbarBrand class="navBarTitle">
+        JsonRpcNet
+      </BNavbarBrand>
+
+      <BNavbarNav class="ml-auto">
+        <BFormSelect
+          v-if="selectServerOptions.length > 1"
+          right
+          size="sm"
+          v-model="selectedServer"
+          v-bind:options="selectServerOptions"
+          v-on:change="selectServer"
+        ></BFormSelect>
+      </BNavbarNav>
+    </BNavbar>
+
+    <div v-if="configErrorMessage !== void 0" class="error">
+      {{ this.configErrorMessage }}
+    </div>
+
+    <div v-if="apiInfo !== void 0">
+      <div class="apiInfo">
+        <ApiInfo v-bind:info="apiInfo.info" />
+        <div v-for="service in apiInfo.services" v-bind:key="service.path">
+          <ApiService
+            v-bind:serverInfo="selectedServerInfo"
+            v-bind:service="service"
+          />
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <div v-if="apiInfoErrorMessage !== void 0">
+        <div class="error">
+          <p>{{ apiInfoErrorMessage }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -10,38 +45,125 @@
 <script>
 import ApiInfo from "./components/ApiInfo.vue";
 import ApiService from "./components/ApiService.vue";
+import { BFormSelect, BNavbar, BNavbarNav, BNavbarBrand } from "bootstrap-vue";
 
 export default {
   name: "JsonRpcDocs",
   components: {
     ApiInfo,
-    ApiService
+    ApiService,
+    BFormSelect,
+    BNavbar,
+    BNavbarBrand,
+    BNavbarNav
   },
   data: function() {
     return {
+      configErrorMessage: void 0,
+      apiInfoErrorMessage: void 0,
       apiInfo: {
         info: {},
         services: []
-      }
+      },
+      selectedServer: null,
+      servers: [
+        {
+          name: String,
+          url: String,
+          ws: String,
+          docs: String
+        }
+      ]
     };
   },
   methods: {
-    readTextFile(file, callback) {
-      var rawFile = new XMLHttpRequest();
-      rawFile.overrideMimeType("application/json");
-      rawFile.open("GET", file, true);
-      rawFile.onreadystatechange = function() {
-        if (rawFile.readyState === 4 && rawFile.status == "200") {
-          callback(rawFile.responseText);
+    getJson(url, callback, errorCallback = null) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status == "200") {
+          callback(xhr.responseText);
         }
       };
-      rawFile.send(null);
+
+      xhr.onerror = function() {
+        if (errorCallback) {
+          errorCallback(xhr.responseText);
+        }
+      };
+
+      xhr.send();
+    },
+    selectServer() {
+      const selectedServerInfo = this.servers.filter(
+        x => x.name === this.selectedServer
+      )[0];
+
+      this.apiInfo = void 0;
+      this.apiInfoErrorMessage = void 0;
+      const docUrl = `${selectedServerInfo.url}/${selectedServerInfo.docs}`;
+      this.getJson(
+        docUrl,
+        text => {
+          this.apiInfo = JSON.parse(text);
+        },
+        errorText => {
+          this.apiInfoErrorMessage =
+            `:~( could not retrieve api documentation from ${docUrl}. ` +
+            errorText;
+        }
+      );
+    }
+  },
+  computed: {
+    selectServerOptions: function() {
+      if (!this.servers) {
+        return [];
+      }
+
+      return this.servers.map(s => {
+        return { value: s.name, text: `${s.name} (${s.url})` };
+      });
+    },
+    selectedServerInfo: function() {
+      if (!this.selectedServer) {
+        return void 0;
+      }
+
+      const selectedServerInfo = this.servers.filter(
+        x => x.name === this.selectedServer
+      );
+      if (selectedServerInfo.length != 1) {
+        throw new Error(
+          `More than 1 server with name ${this.selectedServer} were found. The server name must be unique.`
+        );
+      }
+
+      return selectedServerInfo[0];
     }
   },
   mounted() {
-    this.readTextFile("./jsonRpcApi.json", text => {
-      this.apiInfo = JSON.parse(text);
-    });
+    this.apiInfo = void 0;
+    const configFile = "./config.json";
+    const errorMessage = `Failed to load configuration file from ${configFile}.`;
+    this.getJson(
+      configFile,
+      text => {
+        try {
+          const config = JSON.parse(text);
+          this.servers = config.servers;
+          this.selectedServer = this.selectServerOptions[0].value;
+          this.selectServer();
+        } catch (error) {
+          this.configErrorMessage = errorMessage + " " + error.message;
+          return;
+        }
+      },
+      errorText => {
+        this.configErrorMessage = errorMessage + " " + errorText;
+      }
+    );
   }
 };
 </script>
@@ -51,6 +173,27 @@ export default {
   font-family: $font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin: 20px;
+
+  .apiInfo {
+    margin: 20px;
+  }
+
+  .error {
+    margin: 20px;
+    font-size: 20px;
+    color: $error-color;
+  }
+
+  .navBar {
+    background: map-get($secondary-color, 50);
+    border-bottom: 1px solid map-get($secondary-color, 500);
+    height: 45px;
+
+    .navBarTitle {
+      font-size: 20px;
+      font-weight: bold;
+      color: map-get($secondary-color, 800);
+    }
+  }
 }
 </style>

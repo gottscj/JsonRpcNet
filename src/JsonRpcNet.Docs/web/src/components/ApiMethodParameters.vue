@@ -63,6 +63,8 @@ export default {
 
 <style scoped lang="scss">
 #ApiMethodParameters {
+  font-size: 14px;
+
   .method-parameters-code-ok {
     width: 800px;
     border-color: map-get($secondary-color, A200);

@@ -24,11 +24,10 @@
         />
       </div>
       <!--TODO: create json text area component shared among parameters and response -->
-      <div v-if="hasResponse" class="method-subtitle">Response</div>
+      <div class="method-subtitle">Response</div>
       <div class="websocket-response">
         <textarea
           readonly
-          v-if="hasResponse"
           v-bind:class="
             !websocketResponseError
               ? 'websocket-response-ok'
@@ -67,6 +66,7 @@ export default {
     };
   },
   props: {
+    wsPath: String,
     method: {
       name: String,
       description: String,
@@ -96,11 +96,7 @@ export default {
       this.websocketResponseOk = null;
       this.websocketResponseError = null;
 
-      // TODO: provide base url
-      const websocket = new ws.JsonRpcWebsocket(
-        "ws://localhost:54624/chat",
-        2000
-      );
+      const websocket = new ws.JsonRpcWebsocket(this.wsPath, 2000);
 
       try {
         await websocket.open();
@@ -117,36 +113,25 @@ export default {
         return;
       }
 
-      if (!this.hasResponse) {
-        websocket.notify(this.method.name, this.parametersJson);
-        clearTimeout(timeout);
-        websocket.close();
-        this.callInProgress = false;
-        this.callStatus = "ok";
-      } else {
-        websocket
-          .call(this.method.name, this.parametersJson)
-          .then(response => {
-            this.websocketResponseOk = JSON.stringify(response, null, 2);
-            websocket.close();
-            clearTimeout(timeout);
-            this.callInProgress = false;
-            this.callStatus = "ok";
-          })
-          .catch(error => {
-            this.websocketResponseError = JSON.stringify(error, null, 2);
-            websocket.close();
-            clearTimeout(timeout);
-            this.callInProgress = false;
-            this.callStatus = "ok";
-          });
-      }
+      websocket
+        .call(this.method.name, this.parametersJson)
+        .then(response => {
+          this.websocketResponseOk = JSON.stringify(response, null, 2);
+          websocket.close();
+          clearTimeout(timeout);
+          this.callInProgress = false;
+          this.callStatus = "ok";
+        })
+        .catch(error => {
+          this.websocketResponseError = JSON.stringify(error, null, 2);
+          websocket.close();
+          clearTimeout(timeout);
+          this.callInProgress = false;
+          this.callStatus = "ok";
+        });
     }
   },
   computed: {
-    hasResponse: function() {
-      return this.method.returns.toLowerCase() !== "void";
-    },
     websocketResponse: function() {
       const response = this.websocketResponseError
         ? this.websocketResponseError
