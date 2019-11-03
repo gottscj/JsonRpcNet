@@ -3,7 +3,9 @@ using System.Linq;
 using System.Reflection;
 using JsonRpcNet.Attributes;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json.Serialization;
+using NJsonSchema;
+using NJsonSchema.Generation;
 
 namespace JsonRpcNet.Docs
 {
@@ -49,24 +51,26 @@ namespace JsonRpcNet.Docs
                     MethodInfo = m
                 })
                 .ToList();
-            var generator = new JSchemaGenerator
+            var schemaSettings = new JsonSchemaGeneratorSettings
             {
-                SchemaLocationHandling = SchemaLocationHandling.Definitions,
-                GenerationProviders = { new StringEnumGenerationProvider()},
-                DefaultRequired = Required.Always,
-                SchemaPropertyOrderHandling = SchemaPropertyOrderHandling.Alphabetical
+                SerializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                },
+                
+                AllowReferencesWithProperties = true,
+                FlattenInheritanceHierarchy = true, // Need this due to inheritance,
+                SchemaNameGenerator = new DefaultSchemaNameGenerator(),
+                TypeNameGenerator = new DefaultTypeNameGenerator()
+                
             };
             
+            var generator = new JsonSchemaGenerator(schemaSettings);
             foreach (var m in methodMetaData)
             {
-                var parameters = m.MethodInfo.GetParameters();
+                var paramaters = m.MethodInfo.GetParameters();
                 
-                foreach (var parameterInfo in parameters.Where(p => Type.GetTypeCode(p.ParameterType) == TypeCode.Object))
-                {
-                    var schema = generator.Generate(parameterInfo.ParameterType);
-                    jsonRpcDoc.Definitions[parameterInfo.Name] = schema;
-                }
-                serviceDoc.Methods.Add(new JsonRpcMethodDoc(m.MethodInfo, parameters)
+                serviceDoc.Methods.Add(new JsonRpcMethodDoc(m.MethodInfo, paramaters, generator)
                 {
                     Name = m.Attribute.Name,
                     Description = m.Attribute.Description

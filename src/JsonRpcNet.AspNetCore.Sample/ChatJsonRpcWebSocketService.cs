@@ -1,21 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using JsonRpcNet.Attributes;
+using NJsonSchema;
+using NJsonSchema.Annotations;
 
 namespace JsonRpcNet.AspNetCore.Sample
 {
-    public enum UserType
-    {
-        Admin,
-        NonAdmin
-    }
-    public class AddUserRequest
-    {
-        public string Id { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string Name { get; set; }
-        public UserType UserType { get; set; }
-    }
     public class UserAddedEventArgs : EventArgs
     {
         public string UserName { get; set; }
@@ -45,6 +37,26 @@ namespace JsonRpcNet.AspNetCore.Sample
             UserAdded?.Invoke(this, new UserAddedEventArgs{UserName = "Hello world"});
         }
 
+        [JsonRpcMethod("GetUsers", Description = "Gets users in the chat")]
+        [return:JsonSchema(JsonObjectType.Array, Name = "users", ArrayItem = typeof(User))]
+        public Collection<User> GetUsers()
+        {
+            return new Collection<User>
+            {
+                new User
+                {
+                    Name = "John Wick",
+                    Id = "1",
+                    UserType = UserType.Admin
+                },
+                new User
+                {
+                    Name = "Hella joof",
+                    Id = "2",
+                    UserType = UserType.NonAdmin
+                }
+            };
+        }
         protected override Task OnBinaryMessage(ArraySegment<byte> buffer)
         {
             throw new NotImplementedException();
