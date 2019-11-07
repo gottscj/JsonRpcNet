@@ -1,19 +1,26 @@
 <template>
   <div id="JsonRpcDocs">
     <BNavbar class="navBar">
-      <BNavbarBrand class="navBarTitle">
-        JsonRpcNet
-      </BNavbarBrand>
+      <BNavbarBrand class="navBarTitle">JsonRpcNet</BNavbarBrand>
 
       <BNavbarNav class="ml-auto">
-        <BFormSelect
-          v-if="selectServerOptions.length > 1"
-          right
-          size="sm"
-          v-model="selectedServer"
-          v-bind:options="selectServerOptions"
-          v-on:change="selectServer"
-        ></BFormSelect>
+        <SearchBox
+          placeholder="Search for a method"
+          v-model="searchString"
+        ></SearchBox>
+      </BNavbarNav>
+
+      <BNavbarNav class="ml-auto">
+        <BInputGroup prepend="Server" size="sm">
+          <BFormSelect
+            v-if="selectServerOptions.length > 1"
+            right
+            size="sm"
+            v-model="selectedServer"
+            v-bind:options="selectServerOptions"
+            v-on:change="selectServer"
+          ></BFormSelect>
+        </BInputGroup>
       </BNavbarNav>
     </BNavbar>
 
@@ -45,7 +52,14 @@
 <script>
 import ApiInfo from "./components/ApiInfo.vue";
 import ApiService from "./components/ApiService.vue";
-import { BFormSelect, BNavbar, BNavbarNav, BNavbarBrand } from "bootstrap-vue";
+import {
+  BFormSelect,
+  BInputGroup,
+  BNavbar,
+  BNavbarNav,
+  BNavbarBrand
+} from "bootstrap-vue";
+import SearchBox from "./components/SearchBox.vue";
 
 export default {
   name: "JsonRpcDocs",
@@ -53,9 +67,11 @@ export default {
     ApiInfo,
     ApiService,
     BFormSelect,
+    BInputGroup,
     BNavbar,
     BNavbarBrand,
-    BNavbarNav
+    BNavbarNav,
+    SearchBox
   },
   data: function() {
     return {
@@ -73,7 +89,8 @@ export default {
           ws: String,
           docs: String
         }
-      ]
+      ],
+      searchString: ""
     };
   },
   methods: {
@@ -191,7 +208,6 @@ export default {
 
     .navBarTitle {
       font-size: 20px;
-      font-weight: bold;
       color: map-get($secondary-color, 800);
     }
   }

@@ -33,8 +33,8 @@ export default {
   },
   data: function() {
     return {
-      expanded: false,
-      panelDisplay: "none"
+      expanded: true,
+      panelDisplay: "block"
     };
   },
   props: {
@@ -93,7 +93,6 @@ export default {
     line-height: 40px;
     text-align: center;
     color: inherit;
-    font-weight: bold;
     padding: 0px 20px 0px 20px;
     font-size: 25px;
   }
@@ -108,7 +107,6 @@ export default {
 
   .service-path {
     color: map-get($primary-color, 30);
-    font-weight: bold;
     background-color: map-get($primary-color, 400);
     font-size: 15px;
     padding: 7px;

@@ -41,9 +41,11 @@ export default {
         parametersJson[param.name] = param.type;
       });
 
-      this.parametersCodeRows = this.parameters.length + 2;
+      const parametersTemplate = JSON.stringify(parametersJson, null, 2);
 
-      return JSON.stringify(parametersJson, null, 2);
+      this.parametersCodeRows = parametersTemplate.split("\n").length;
+
+      return parametersTemplate;
     },
     emitParametersChange() {
       this.jsonError = null;

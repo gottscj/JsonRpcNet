@@ -4,7 +4,7 @@
       <div class="action-button-disabled">{{ text }}</div>
     </template>
     <template v-else>
-      <a class="action-button" @click="$emit('click')" href="#">
+      <a class="action-button" @click="$emit('click')">
         <div class="face-primary">{{ text }}</div>
         <div class="face-secondary">{{ hoverText }}</div>
       </a>
