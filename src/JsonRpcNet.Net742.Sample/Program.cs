@@ -12,12 +12,12 @@ namespace JsonRpcNet.Net742.Sample
             var server = new HttpServer(5000);
 
             server.AddJsonRpcService(() => new ChatJsonRpcWebSocketService());
-            server.UseJsonRpcApi(new JsonRpcInfoDoc
+            server.UseJsonRpcApi(new JsonRpcInfo
             {
                 Description = "Api for JsonRpc chat",
                 Title = "Chat API",
                 Version = "v1",
-                Contact = new ContactDoc
+                Contact = new JsonRpcContact
                 {
                     Email = "test@test.com"
                 }

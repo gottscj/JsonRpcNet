@@ -26,7 +26,7 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 			AddJsonRpcService(server, CancellationToken.None, initializer);
 		}
 
-		public static void UseJsonRpcApi(this HttpServer server, JsonRpcInfoDoc jsonRpcInfo)
+		public static void UseJsonRpcApi(this HttpServer server, JsonRpcInfo jsonRpcInfo)
 		{
 			server.OnGet += (s, e) =>
 			{

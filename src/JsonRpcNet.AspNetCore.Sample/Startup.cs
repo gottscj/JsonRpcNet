@@ -46,20 +46,21 @@ namespace JsonRpcNet.AspNetCore.Sample
 
             app.UseCors("AllowAll");
 
-            app.UseJsonRpcApi(new JsonRpcInfoDoc
+            var info = new JsonRpcInfo
             {
                 Description = "Api for JsonRpc chat",
                 Title = "Chat API",
                 Version = "v1",
-                Contact = new ContactDoc
+                Contact = new JsonRpcContact
                 {
                     Email = "test@test.com"
                 }
-            });
+            };
+            app.UseJsonRpcApi(info);
             
             app.UseWebSockets();
             app.AddJsonRpcService<ChatJsonRpcWebSocketService>();
-            var doc = new JsonRpcDoc();
+            var doc = new JsonRpcDoc(info);
             var serviceDoc = DocGenerator.GenerateJsonRpcServiceDoc(typeof(ChatJsonRpcWebSocketService), doc);
 
             app.Run(async (context) => { await context.Response.WriteAsync("Hello World!"); });

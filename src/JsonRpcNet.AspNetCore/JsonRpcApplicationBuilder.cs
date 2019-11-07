@@ -39,10 +39,10 @@ namespace JsonRpcNet.AspNetCore
 
         public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app)
         {
-            return UseJsonRpcApi(app, new JsonRpcInfoDoc());
+            return UseJsonRpcApi(app, new JsonRpcInfo());
         }
         
-        public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app, JsonRpcInfoDoc jsonRpcInfo)
+        public static IApplicationBuilder UseJsonRpcApi(this IApplicationBuilder app, JsonRpcInfo jsonRpcInfo)
         {
             app.Use(async (context, next) =>
             {

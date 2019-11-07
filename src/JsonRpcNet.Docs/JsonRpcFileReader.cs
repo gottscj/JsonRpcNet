@@ -1,15 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using NJsonSchema;
+using NJsonSchema.Generation;
 
 namespace JsonRpcNet.Docs
 {
     public static class JsonRpcFileReader
     {
+        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = new List<JsonConverter>{new StringEnumConverter()}
+        };
+        
 		const string staticResourcesPath = "web.dist";
-        public static FileContent GetFile(string requestPath, JsonRpcInfoDoc info)
+        public static FileContent GetFile(string requestPath, JsonRpcInfo info)
         {
             var basePath = info?.JsonRpcApiEndpoint ?? "/jsonrpc";
             string filePath;
@@ -31,11 +44,44 @@ namespace JsonRpcNet.Docs
             if (requestPath.EndsWith("jsonRpcApi.json"))
             {
                 var jsonRpcDoc = DocGenerator.GenerateJsonRpcDoc(info);
-                var doc = JsonConvert.SerializeObject(jsonRpcDoc, new JsonSerializerSettings
+                
+                var schemaSettings = new JsonSchemaGeneratorSettings
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                });
-                var buffer= Encoding.UTF8.GetBytes(doc);
+                    SerializerSettings = JsonSerializerSettings,
+                    GenerateExamples = true,
+                    SchemaType = SchemaType.JsonSchema,
+                    GenerateAbstractSchemas = false,
+                };
+                
+                var schema = new JsonSchema();
+                
+                var resolver = new JsonSchemaResolver(schema, schemaSettings);
+                var generator = new JsonSchemaGenerator(schemaSettings);
+                
+                generator.Generate(schema, typeof(object), resolver);
+
+                var jDoc = JObject.FromObject(jsonRpcDoc);
+                // generate schema definitions
+                foreach (var rpcService in jsonRpcDoc.Services)
+                {
+                    foreach (var rpcMethod in rpcService.Methods)
+                    {
+                        if (rpcMethod.Response.Type != typeof(void) && rpcMethod.Response.Type != typeof(Task))
+                        {
+                            generator.Generate(rpcMethod.Response.Type, resolver);
+                        }
+                        
+                        foreach (var rpcMethodParameter in rpcMethod.Parameters)
+                        {
+                            generator.Generate(rpcMethodParameter.Type, resolver);
+                        }
+                    }
+                }
+
+                var schemaJObject = JObject.Parse(schema.ToJson());
+                jDoc["definitions"] = schemaJObject["definitions"];
+                
+                var buffer= Encoding.UTF8.GetBytes(jDoc.ToString(Formatting.None));
                 
                 var fileResult = new FileContent(requestPath, buffer);
                 
@@ -62,7 +108,13 @@ namespace JsonRpcNet.Docs
                 return fileResult;
             }
         }
-
+        public static string ToLowerFirstChar(string input)
+        {
+            string newString = input;
+            if (!String.IsNullOrEmpty(newString) && Char.IsUpper(newString[0]))
+                newString = Char.ToLower(newString[0]) + newString.Substring(1);
+            return newString;
+        }
         private static byte[] ReadToEnd(Stream stream)
         {
             long originalPosition = 0;

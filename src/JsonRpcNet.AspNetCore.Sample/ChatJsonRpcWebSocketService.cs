@@ -38,10 +38,9 @@ namespace JsonRpcNet.AspNetCore.Sample
         }
 
         [JsonRpcMethod("GetUsers", Description = "Gets users in the chat")]
-        [return:JsonSchema(JsonObjectType.Array, Name = "users", ArrayItem = typeof(User))]
-        public Collection<User> GetUsers()
+        public User[] GetUsers()
         {
-            return new Collection<User>
+            return new List<User>
             {
                 new User
                 {
@@ -55,7 +54,7 @@ namespace JsonRpcNet.AspNetCore.Sample
                     Id = "2",
                     UserType = UserType.NonAdmin
                 }
-            };
+            }.ToArray();
         }
         protected override Task OnBinaryMessage(ArraySegment<byte> buffer)
         {
@@ -68,4 +67,5 @@ namespace JsonRpcNet.AspNetCore.Sample
             return base.OnConnected();
         }
     }
+
 }
