@@ -93,9 +93,6 @@ export default {
         this.callStatus = "loading";
       }, 1000);
 
-      this.websocketResponseOk = null;
-      this.websocketResponseError = null;
-
       const websocket = new ws.JsonRpcWebsocket(this.wsPath, 2000);
 
       try {
@@ -110,6 +107,8 @@ export default {
         clearTimeout(timeout);
         this.callInProgress = false;
         this.callStatus = "error";
+        this.websocketResponseOk = null;
+        this.websocketResponseError = null;
         return;
       }
 
@@ -117,6 +116,7 @@ export default {
         .call(this.method.name, this.parametersJson)
         .then(response => {
           this.websocketResponseOk = JSON.stringify(response, null, 2);
+          this.websocketResponseError = null;
           websocket.close();
           clearTimeout(timeout);
           this.callInProgress = false;
@@ -124,6 +124,7 @@ export default {
         })
         .catch(error => {
           this.websocketResponseError = JSON.stringify(error, null, 2);
+          this.websocketResponseOk = null;
           websocket.close();
           clearTimeout(timeout);
           this.callInProgress = false;
@@ -192,7 +193,6 @@ export default {
 
   .method-name {
     color: $light-text;
-    font-weight: bold;
     background-color: map-get($secondary-color, 400);
     font-size: 15px;
     padding: 7px;

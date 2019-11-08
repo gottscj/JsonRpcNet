@@ -46,7 +46,7 @@ export default {
         );
       });
 
-      let parametersTemplate = JSON.stringify(parametersJson, null, 2);
+      const parametersTemplate = JSON.stringify(parametersJson, null, 2);
 
       this.parametersCodeRows = parametersTemplate.split("\n").length;
 
