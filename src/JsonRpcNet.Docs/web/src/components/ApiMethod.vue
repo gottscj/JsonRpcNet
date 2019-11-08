@@ -12,7 +12,7 @@
       <div class="method-subtitle">Parameters</div>
       <div class="method-parameters">
         <ApiMethodParameters
-          v-bind:parameters="method.parameters"
+          v-bind:parameters="method.params"
           v-on:parametersChanged="onParametersChanged"
         />
         <ActionButtonWithStatus
