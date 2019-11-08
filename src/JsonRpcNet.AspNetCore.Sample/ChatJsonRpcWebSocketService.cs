@@ -15,6 +15,7 @@ namespace JsonRpcNet.AspNetCore.Sample
     [JsonRpcService("chat", Description = "Chat hub", Name = "ChatService")]
     public class ChatJsonRpcWebSocketService : JsonRpcWebSocketService
     {
+        [JsonRpcNotification("userAdded", Description = "Invoked when user added to chat")]
         public event EventHandler<UserAddedEventArgs> UserAdded;
         
         [JsonRpcMethod("SendMessage", Description = "Sends a message to the chat")]

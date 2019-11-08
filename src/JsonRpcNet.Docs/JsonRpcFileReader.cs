@@ -76,6 +76,11 @@ namespace JsonRpcNet.Docs
                             generator.Generate(rpcMethodParameter.Type, resolver);
                         }
                     }
+
+                    foreach (var notification in rpcService.Notifications)
+                    {
+                        generator.Generate(notification.Parameter.Type, resolver);
+                    }
                 }
 
                 var schemaJObject = JObject.Parse(schema.ToJson());

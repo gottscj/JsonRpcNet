@@ -32,7 +32,7 @@ namespace JsonRpcNet.Docs
         [JsonProperty("response")]
         public JsonRpcTypeInfo Response { get; }
         
-        [JsonProperty("parameters")]
+        [JsonProperty("params")]
         public IList<JsonRpcTypeInfo> Parameters { get; }
     }
 }
