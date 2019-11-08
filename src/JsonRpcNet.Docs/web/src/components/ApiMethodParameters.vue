@@ -41,9 +41,7 @@ export default {
       let parametersJson = {};
       this.parameters.forEach(param => {
         // eslint-disable-next-line
-        parametersJson[param.name] = ParameterTypeService.getProvider().unrollParameterType(
-          typeof param.type === "object" ? param.type : { type: param.type }
-        );
+        parametersJson[param.name] = ParameterTypeService.getProvider().unrollParameterType(param.schema);
       });
 
       const parametersTemplate = JSON.stringify(parametersJson, null, 2);

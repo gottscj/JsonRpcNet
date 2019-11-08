@@ -70,7 +70,7 @@ export default {
     method: {
       name: String,
       description: String,
-      returns: String,
+      response: Object,
       parameters: Array
     }
   },

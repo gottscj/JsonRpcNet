@@ -61,13 +61,12 @@ export class ParameterTypeService {
     return typeDefinition;
   }
 
-  unrollParameterType(type, typeDef = null) {
+  unrollParameterType(type) {
     let paramTypeDef = type;
 
     if (ParameterTypeService.getProvider().isReferenceType(type)) {
       paramTypeDef = ParameterTypeService.getProvider().getTypeReferenceDefinition(
-        type,
-        typeDef
+        type
       );
     }
 
@@ -76,8 +75,7 @@ export class ParameterTypeService {
         let paramType = {};
         for (const property in paramTypeDef.properties) {
           paramType[property] = this.unrollParameterType(
-            paramTypeDef.properties[property],
-            typeDef ? typeDef : paramTypeDef
+            paramTypeDef.properties[property]
           );
         }
         return paramType;
