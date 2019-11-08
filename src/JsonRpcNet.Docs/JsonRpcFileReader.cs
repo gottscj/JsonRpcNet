@@ -51,6 +51,7 @@ namespace JsonRpcNet.Docs
                     GenerateExamples = true,
                     SchemaType = SchemaType.JsonSchema,
                     GenerateAbstractSchemas = false,
+                    DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull
                 };
                 
                 var schema = new JsonSchema();
@@ -75,6 +76,11 @@ namespace JsonRpcNet.Docs
                         {
                             generator.Generate(rpcMethodParameter.Type, resolver);
                         }
+                    }
+
+                    foreach (var notification in rpcService.Notifications)
+                    {
+                        generator.Generate(notification.Parameter.Type, resolver);
                     }
                 }
 

@@ -36,7 +36,7 @@ namespace JsonRpcNet.Docs
 
             var serviceDoc = new JsonRpcService
             {
-                Name = serviceAttribute.Name,
+                Name = serviceAttribute?.Name ?? type.Name,
                 Path = serviceAttribute?.Path ?? type.Name.ToLower(),
                 Description = serviceAttribute?.Description ?? string.Empty
             };
@@ -53,14 +53,33 @@ namespace JsonRpcNet.Docs
             foreach (var m in methodMetaData)
             {
                 var parameters = m.MethodInfo.GetParameters();
-                var jsonRpcMethod = new JsonRpcMethod(m.MethodInfo, parameters)
+                var method = new JsonRpcMethod(m.MethodInfo, parameters)
                 {
                     Name = m.Attribute.Name,
                     Description = m.Attribute.Description
                 };
-                serviceDoc.Methods.Add(jsonRpcMethod);
+                serviceDoc.Methods.Add(method);
             }
 
+            var notificationMetaData = type.GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(m => m.GetCustomAttribute(typeof(JsonRpcNotificationAttribute)) != null)
+                .Select(m => new
+                {
+                    Attribute = (JsonRpcNotificationAttribute) m.GetCustomAttribute(typeof(JsonRpcNotificationAttribute)),
+                    EventInfo = m
+                })
+                .ToList();
+            
+            foreach (var m in notificationMetaData)
+            {
+                var notification = new JsonRpcNotification(m.EventInfo)
+                {
+                    Name = m.Attribute.Name,
+                    Description = m.Attribute.Description
+                };
+                serviceDoc.Notifications.Add(notification);
+            }
+            
             return serviceDoc;
         }
     }
