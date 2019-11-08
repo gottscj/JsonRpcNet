@@ -51,6 +51,7 @@ namespace JsonRpcNet.Docs
                     GenerateExamples = true,
                     SchemaType = SchemaType.JsonSchema,
                     GenerateAbstractSchemas = false,
+                    DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull
                 };
                 
                 var schema = new JsonSchema();
