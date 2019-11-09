@@ -18,11 +18,13 @@ namespace JsonRpcNet
 		{
 			try
 			{
-				var events = GetType().GetEvents(BindingFlags.Instance | BindingFlags.Public);
+				var events = GetType().GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 				foreach (var eventInfo in events)
 				{
-					eventInfo
-						.AddEventHandler(this, EventProxy.Create(eventInfo, e => InvokeNotification(eventInfo, e)));
+					var addMethod = eventInfo.GetAddMethod(true);
+					addMethod.Invoke(this, new object[] {EventProxy.Create(eventInfo, e => InvokeNotification(eventInfo, e))});
+//					eventInfo
+//						.AddEventHandler(this, EventProxy.Create(eventInfo, e => InvokeNotification(eventInfo, e)));
 				}
 			}
 			catch (Exception e)
@@ -64,7 +66,7 @@ namespace JsonRpcNet
 				var request = DeserializeRequest(msg);
 				var method = GetRequestMethodInfo(request);
 				var paramsArray = CreateParamsArray(request, method.MethodInfo);
-				var result = InvokeRpcMethod(request, method, paramsArray);
+				var result = await InvokeRpcMethodAsync(request, method, paramsArray).ConfigureAwait(false);
 				if (request.Id != null)
 				{
 					// do not answer notifications
@@ -168,12 +170,12 @@ namespace JsonRpcNet
 			}
 		}
 
-		private JsonRpcResultResponse InvokeRpcMethod(JsonRpcRequest request, MethodInfoWithPermissions method, object[] paramsArray)
+		private async Task <JsonRpcResultResponse> InvokeRpcMethodAsync(JsonRpcRequest request, MethodInfoWithPermissions method, object[] paramsArray)
 		{
 			// Execute method and get result
 			try
 			{
-				var result = method.Invoke(this, paramsArray, null);
+				var result = await method.InvokeAsync(this, paramsArray, null).ConfigureAwait(false);
 				return new JsonRpcResultResponse(result) {Id = request.Id};
 			}
 			catch (Exception e)

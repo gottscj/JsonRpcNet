@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace JsonRpcNet
 {
@@ -8,7 +10,8 @@ namespace JsonRpcNet
 	{
 		private delegate object ReturnValueDelegate(object instance, object[] arguments);
 		private delegate void VoidDelegate(object instance, object[] arguments);
-
+		private object _syncRoot = new object();
+		private Dictionary<Type, ReturnValueDelegate> _taskResultCache = new Dictionary<Type,ReturnValueDelegate>();
 		public FastMethodInfo(MethodInfo methodInfo)
 		{
 			Parameters = methodInfo.GetParameters();
@@ -36,9 +39,37 @@ namespace JsonRpcNet
 
 		public ParameterInfo[] Parameters { get; }
 		
-		public object Invoke(object instance, params object[] arguments)
+		public Task<object> InvokeAsync(object instance, params object[] arguments)
 		{
-			return Delegate(instance, arguments);
+			var result = Delegate(instance, arguments);
+			if (!(result is Task task)) return Task.FromResult(result);
+
+			return GetTaskResult(task);
+		}
+
+		private async Task<object> GetTaskResult(Task task)
+		{
+			await task.ConfigureAwait(false);
+
+			var taskType = task.GetType();
+			if (!taskType.IsGenericType)
+			{
+				return null;
+			}
+			ReturnValueDelegate valueDelegate;
+			lock (_syncRoot)
+			{
+				if (!_taskResultCache.TryGetValue(taskType, out valueDelegate))
+				{
+					var property = taskType.GetProperty("Result");
+					valueDelegate = property == null ? 
+						(instance, arguments) => null : // should never happen, but doesnt hurt. ¯\_(ツ)_/¯
+						new FastMethodInfo(property.GetGetMethod()).Delegate;
+					_taskResultCache.Add(taskType, valueDelegate);
+				}
+			}
+
+			return valueDelegate.Invoke(task, null);
 		}
 	}
 }

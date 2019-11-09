@@ -1,87 +1,175 @@
 {
     "info": {
-        "description": "Api for JsonRpc chat",
-        "version": "v1",
-        "title": "Chat API",
-        "contact": {
-            "name": "",
-            "email": "test@test.com",
-            "url": ""
-        },
-        "jsonRpcApiEndpoint": "/jsonrpc"
+      "description": "Api for JsonRpc chat",
+      "version": "v1",
+      "title": "Chat API",
+      "contact": {
+        "name": "",
+        "email": "test@test.com",
+        "url": ""
+      },
+      "jsonRpcApiEndpoint": "/jsonrpc"
     },
     "services": [
-        {
-            "name": "ChatService",
-            "path": "/chat",
-            "description": "Chat hub",
-            "methods": [
-                {
-                    "name": "SendMessage",
-                    "description": "Sends a message to the chat",
-                    "returns": "Void",
-                    "parameters": [
-                        {
-                            "name": "message",
-                            "type": "String"
-                        }
-                    ]
-                },
-                {
-                    "name": "SendMessageEcho",
-                    "description": "Sends a message to the chat and get and echo back",
-                    "returns": "String",
-                    "parameters": [
-                        {
-                            "name": "message",
-                            "type": "String"
-                        }
-                    ]
-                },
-                {
-                    "name": "AddUser",
-                    "description": "Add a user to the chat",
-                    "returns": "Void",
-                    "parameters": [
-                        {
-                            "name": "request",
-                            "type": {
-                                "$ref": "#definitions/request"
-                            }
-                        }
-                    ]
+      {
+        "name": "ChatService",
+        "path": "/chat",
+        "description": "Chat hub",
+        "methods": [
+          {
+            "name": "SendMessage",
+            "description": "Sends a message to the chat",
+            "response": {
+              "required": true,
+              "schema": {
+                "type": "void"
+              }
+            },
+            "params": [
+              {
+                "name": "message",
+                "required": true,
+                "schema": {
+                  "type": "string"
                 }
+              }
             ]
-        }
+          },
+          {
+            "name": "SendMessageEcho",
+            "description": "Sends a message to the chat and get and echo back",
+            "response": {
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            "params": [
+              {
+                "name": "message",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          {
+            "name": "AddUser",
+            "description": "Add a user to the chat",
+            "response": {
+              "required": true,
+              "schema": {
+                "type": "void"
+              }
+            },
+            "params": [
+              {
+                "name": "request",
+                "required": true,
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/definitions/AddUserRequest"
+                }
+              }
+            ]
+          },
+          {
+            "name": "GetUsers",
+            "description": "Gets users in the chat",
+            "response": {
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            },
+            "params": []
+          }
+        ],
+        "notifications": [
+          {
+            "name": "userAdded",
+            "description": "Invoked when user added to chat",
+            "params": {
+              "required": true,
+              "schema": {
+                "type": "object",
+                "$ref": "#/definitions/UserAddedEventArgs"
+              }
+            }
+          }
+        ]
+      }
     ],
     "definitions": {
-        "request": {
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "type": "string"
-                },
-                "Name": {
-                    "type": "string"
-                },
-                "TimeStamp": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "UserType": {
-                    "type": "string",
-                    "enum": [
-                        "Admin",
-                        "NonAdmin"
-                    ]
-                }
-            },
-            "required": [
-                "Id",
-                "Name",
-                "TimeStamp",
-                "UserType"
-            ]
+      "AddUserRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timeStamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userType": {
+            "$ref": "#/definitions/UserType"
+          }
         }
+      },
+      "UserType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Admin",
+          "NonAdmin"
+        ],
+        "enum": [
+          "Admin",
+          "NonAdmin"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "userType": {
+            "$ref": "#/definitions/UserType"
+          }
+        }
+      },
+      "UserAddedEventArgs": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/EventArgs"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "EventArgs": {
+        "type": "object",
+        "additionalProperties": false
+      }
     }
-}
+  }

@@ -16,18 +16,18 @@ namespace JsonRpcNet.AspNetCore.Sample
     public class ChatJsonRpcWebSocketService : JsonRpcWebSocketService
     {
         [JsonRpcNotification("userAdded", Description = "Invoked when user added to chat")]
-        public event EventHandler<UserAddedEventArgs> UserAdded;
+        private event EventHandler<UserAddedEventArgs> UserAdded;
         
         [JsonRpcMethod("SendMessage", Description = "Sends a message to the chat")]
-        public void SendMessage(string message)
+        public Task SendMessage(string message)
         {
-           BroadcastAsync(message).GetAwaiter().GetResult();
+           return BroadcastAsync(message);
         }
 
         [JsonRpcMethod("SendMessageEcho", Description = "Sends a message to the chat and get and echo back")]
-        public string EchoMessage(string message)
+        public async Task<string> EchoMessage(string message)
         {
-            BroadcastAsync(message).GetAwaiter().GetResult();
+            await BroadcastAsync(message);
             return message;
         }
         
@@ -35,27 +35,29 @@ namespace JsonRpcNet.AspNetCore.Sample
         public void AddUser(AddUserRequest request)
         {
             BroadcastAsync($"User {request.Name} joined").GetAwaiter().GetResult();
-            UserAdded?.Invoke(this, new UserAddedEventArgs{UserName = "Hello world"});
+            UserAdded?.Invoke(this, new UserAddedEventArgs{UserName = request.Name});
         }
 
         [JsonRpcMethod("GetUsers", Description = "Gets users in the chat")]
-        public User[] GetUsers()
+        public Task<List<User>> GetUsers()
         {
-            return new List<User>
-            {
-                new User
-                {
-                    Name = "John Wick",
-                    Id = "1",
-                    UserType = UserType.Admin
-                },
-                new User
-                {
-                    Name = "Hella joof",
-                    Id = "2",
-                    UserType = UserType.NonAdmin
-                }
-            }.ToArray();
+            return
+                Task.FromResult(
+                    new List<User>
+                    {
+                        new User
+                        {
+                            Name = "John Wick",
+                            Id = "1",
+                            UserType = UserType.Admin
+                        },
+                        new User
+                        {
+                            Name = "Hella joof",
+                            Id = "2",
+                            UserType = UserType.NonAdmin
+                        }
+                    });
         }
         protected override Task OnBinaryMessage(ArraySegment<byte> buffer)
         {
