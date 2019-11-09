@@ -2,20 +2,6 @@ export class TypeDefinitionsService {
   pathRef = "#/";
   typeRef = "$ref";
 
-  static service;
-
-  static reset(apiInfo) {
-    TypeDefinitionsService.service = new TypeDefinitionsService(apiInfo);
-  }
-
-  static get() {
-    if (!TypeDefinitionsService.service) {
-      throw Error("TypeDefinitions service is not initialized");
-    }
-
-    return TypeDefinitionsService.service;
-  }
-
   constructor(apiInfo) {
     this.apiInfo = apiInfo;
   }

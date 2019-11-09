@@ -127,7 +127,7 @@ export default {
         docUrl,
         text => {
           this.apiInfo = JSON.parse(text);
-          this.typeDefinitionsService = TypeDefinitionsService.reset(
+          this.$root.$data.typeDefinitionsService = new TypeDefinitionsService(
             this.apiInfo
           );
         },
