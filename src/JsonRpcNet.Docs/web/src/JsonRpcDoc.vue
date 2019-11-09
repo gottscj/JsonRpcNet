@@ -3,7 +3,7 @@
     <BNavbar class="navBar">
       <BNavbarBrand class="navBarTitle">JsonRpcNet</BNavbarBrand>
 
-      <BNavbarNav class="ml-auto">
+      <BNavbarNav class="ml-auto" v-if="apiInfo !== void 0">
         <SearchBox
           placeholder="Search for a method"
           v-model="searchString"
@@ -60,7 +60,7 @@ import {
   BNavbarBrand
 } from "bootstrap-vue";
 import SearchBox from "./components/SearchBox.vue";
-import { ParameterTypeService } from "./services/ParameterType.service";
+import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
 
 export default {
   name: "JsonRpcDocs",
@@ -93,7 +93,7 @@ export default {
         }
       ],
       searchString: "",
-      parameterTypeService: ParameterTypeService
+      typeDefinitionsService: TypeDefinitionsService
     };
   },
   methods: {
@@ -127,7 +127,7 @@ export default {
         docUrl,
         text => {
           this.apiInfo = JSON.parse(text);
-          this.parameterTypeService = ParameterTypeService.initialize(
+          this.$root.$data.typeDefinitionsService = new TypeDefinitionsService(
             this.apiInfo
           );
         },
