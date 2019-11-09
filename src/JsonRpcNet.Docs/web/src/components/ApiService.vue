@@ -12,12 +12,31 @@
       </div>
     </button>
     <div class="panel" v-bind:style="{ display: panelDisplay }">
-      <div v-for="method in service.methods" v-bind:key="method.name">
-        <ApiMethod
-          class="service-method"
-          v-bind:wsPath="wsPath"
-          v-bind:method="method"
-        />
+      <div class="service-group">
+        <div class="service-group-title">
+          Methods
+        </div>
+        <div v-for="method in service.methods" v-bind:key="method.name">
+          <ApiMethod
+            class="service-group-element"
+            v-bind:wsPath="wsPath"
+            v-bind:method="method"
+          />
+        </div>
+      </div>
+      <div class="service-group">
+        <div class="service-group-title">
+          Notifications
+        </div>
+        <div
+          v-for="notification in service.notifications"
+          v-bind:key="notification.name"
+        >
+          <ApiNotification
+            class="service-group-element"
+            v-bind:notification="notification"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -25,11 +44,13 @@
 
 <script>
 import ApiMethod from "./ApiMethod.vue";
+import ApiNotification from "./ApiNotification.vue";
 
 export default {
   name: "ApiService",
   components: {
-    ApiMethod
+    ApiMethod,
+    ApiNotification
   },
   data: function() {
     return {
@@ -43,7 +64,8 @@ export default {
       name: String,
       path: String,
       description: String,
-      methods: []
+      methods: [],
+      notifications: []
     }
   },
   methods: {
@@ -83,7 +105,7 @@ export default {
 
   .panel {
     font-family: inherit;
-    padding: 10px;
+    padding-left: 10px;
     //background-color: map-get($primary-color, 30);
     overflow: hidden;
   }
@@ -128,7 +150,15 @@ export default {
     height: 15px;
   }
 
-  .service-method {
+  .service-group {
+    padding: 10px 10px 0px 10px;
+  }
+
+  .service-group-title {
+    font-size: 20px;
+  }
+
+  .service-group-element {
     padding: 5px;
   }
 }

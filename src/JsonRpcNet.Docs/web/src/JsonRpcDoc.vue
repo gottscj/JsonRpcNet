@@ -3,7 +3,8 @@
     <BNavbar class="navBar">
       <BNavbarBrand class="navBarTitle">JsonRpcNet</BNavbarBrand>
 
-      <BNavbarNav class="ml-auto" v-if="apiInfo !== void 0">
+      <!-- search box is disabled, because the functionality isn't implemented yet -->
+      <BNavbarNav class="ml-auto" v-if="apiInfo !== void 0 && false">
         <SearchBox
           placeholder="Search for a method"
           v-model="searchString"
@@ -92,8 +93,7 @@ export default {
           docs: String
         }
       ],
-      searchString: "",
-      typeDefinitionsService: TypeDefinitionsService
+      searchString: ""
     };
   },
   methods: {

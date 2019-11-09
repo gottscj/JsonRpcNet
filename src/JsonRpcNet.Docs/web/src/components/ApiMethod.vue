@@ -186,11 +186,6 @@ export default {
       2px 2px 2px 0 map-get($secondary-color, 50);
   }
 
-  .service-arrow {
-    height: 15px;
-    padding: 10px 10px 0px 10px;
-  }
-
   .method-name {
     color: $light-text;
     background-color: map-get($secondary-color, 400);
@@ -210,7 +205,7 @@ export default {
   .method-subtitle {
     padding: 10px;
     font-size: 14px;
-    color: map-get($secondary-color, 500);
+    color: map-get($primary-color, 900);
     background: map-get($secondary-color, 50);
   }
 
