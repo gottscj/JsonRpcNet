@@ -41,7 +41,7 @@ namespace JsonRpcNet
 			{
 				["jsonrpc"] = "2.0",
 				["method"] = eventInfo.Name,
-				["params"] = JsonConvert.SerializeObject(e, JsonRpcContract.SerializerSettings)
+				["params"] = JsonConvert.SerializeObject(new []{e}, JsonRpcContract.SerializerSettings)
 			};
 			SendAsync(notificationObject.ToString())
 				.ContinueWith(t => Console.WriteLine("Notification send result: " + t.Status));
