@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { ParameterTypeService } from "../services/ParameterType.service";
+import { TypeDefinitionsService } from "../services/TypeDefinitions.service";
 
 export default {
   name: "ApiMethodParameters",
@@ -41,7 +41,7 @@ export default {
       let parametersJson = {};
       this.parameters.forEach(param => {
         // eslint-disable-next-line
-        parametersJson[param.name] = ParameterTypeService.getProvider().unrollParameterType(param.schema);
+        parametersJson[param.name] = TypeDefinitionsService.get().createDefaultObject(param.schema);
       });
 
       const parametersTemplate = JSON.stringify(parametersJson, null, 2);

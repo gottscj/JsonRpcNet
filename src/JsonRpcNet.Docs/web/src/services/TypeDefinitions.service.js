@@ -1,25 +1,19 @@
-export class ParameterTypeService {
+export class TypeDefinitionsService {
   pathRef = "#/";
   typeRef = "$ref";
 
-  static provider;
+  static service;
 
-  static initialize(apiInfo) {
-    if (ParameterTypeService.provider) {
-      throw new Error(
-        "Trying to initialize ParameterTypeService more than once"
-      );
-    }
-
-    ParameterTypeService.provider = new ParameterTypeService(apiInfo);
+  static reset(apiInfo) {
+    TypeDefinitionsService.service = new TypeDefinitionsService(apiInfo);
   }
 
-  static getProvider() {
-    if (!ParameterTypeService.provider) {
-      throw Error("DefinitionsProvider is not initialized");
+  static get() {
+    if (!TypeDefinitionsService.service) {
+      throw Error("TypeDefinitions service is not initialized");
     }
 
-    return ParameterTypeService.provider;
+    return TypeDefinitionsService.service;
   }
 
   constructor(apiInfo) {
@@ -61,20 +55,18 @@ export class ParameterTypeService {
     return typeDefinition;
   }
 
-  unrollParameterType(type) {
+  createDefaultObject(type) {
     let paramTypeDef = type;
 
-    if (ParameterTypeService.getProvider().isReferenceType(type)) {
-      paramTypeDef = ParameterTypeService.getProvider().getTypeReferenceDefinition(
-        type
-      );
+    if (this.isReferenceType(type)) {
+      paramTypeDef = this.getTypeReferenceDefinition(type);
     }
 
     switch (paramTypeDef.type.toLowerCase()) {
       case "object": {
         let paramType = {};
         for (const property in paramTypeDef.properties) {
-          paramType[property] = this.unrollParameterType(
+          paramType[property] = this.createDefaultObject(
             paramTypeDef.properties[property]
           );
         }
@@ -88,12 +80,12 @@ export class ParameterTypeService {
             default: {
               // TODO: support more formats
               // eslint-disable-next-line
-              console.error(`Unsupported string format ${paramTypeDef.format}`);
-              break;
+              console.warn(`Unsupported string format ${paramTypeDef.format}. Format name will be used, which may not be a valid value.`);
+              return paramTypeDef.format;
             }
           }
         } else if ("enum" in paramTypeDef) {
-          return paramTypeDef.enum.join(" | ");
+          return paramTypeDef.enum[0];
         }
         return "string";
       }
