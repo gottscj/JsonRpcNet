@@ -177,7 +177,6 @@ export default {
   .panel {
     font-family: inherit;
     padding-left: 10px;
-    //background-color: map-get($primary-color, 30);
     overflow: hidden;
   }
 
@@ -189,7 +188,7 @@ export default {
   .service-online {
     text-align: center;
     margin: 10px 0px 0px 20px;
-    background-color: green;
+    background-color: map-get($accent-color, 500);
   }
 
   .service-name {
