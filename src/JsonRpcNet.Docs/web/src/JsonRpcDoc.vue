@@ -29,24 +29,28 @@
       {{ this.configErrorMessage }}
     </div>
 
-    <div v-if="apiInfo !== void 0">
-      <div class="apiInfo">
-        <ApiInfo v-bind:info="apiInfo.info" />
-        <div v-for="service in apiInfo.services" v-bind:key="service.path">
-          <ApiService
-            v-bind:serverInfo="selectedServerInfo"
-            v-bind:service="service"
-          />
+    <div class="split left">
+      <div v-if="apiInfo !== void 0">
+        <div class="apiInfo">
+          <ApiInfo v-bind:info="apiInfo.info" />
+          <div v-for="service in apiInfo.services" v-bind:key="service.path">
+            <ApiService
+              v-bind:serverInfo="selectedServerInfo"
+              v-bind:service="service"
+            />
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div v-if="apiInfoErrorMessage !== void 0">
+          <div class="error">
+            <p>{{ apiInfoErrorMessage }}</p>
+          </div>
         </div>
       </div>
     </div>
-    <div v-else>
-      <div v-if="apiInfoErrorMessage !== void 0">
-        <div class="error">
-          <p>{{ apiInfoErrorMessage }}</p>
-        </div>
-      </div>
-    </div>
+
+    <div class="split right"></div>
   </div>
 </template>
 
@@ -197,6 +201,25 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  .split {
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+
+  .left {
+    width: 80%;
+    left: 0;
+  }
+
+  .right {
+    width: 20%;
+    border-left: 1px solid map-get($primary-color, 200);
+    right: 0;
+  }
+
   .apiInfo {
     margin: 20px;
   }
@@ -208,13 +231,13 @@ export default {
   }
 
   .navBar {
-    background: map-get($secondary-color, 50);
-    border-bottom: 1px solid map-get($secondary-color, 500);
+    background: map-get($primary-color, 30);
+    border-bottom: 1px solid map-get($primary-color, 100);
     height: 45px;
 
     .navBarTitle {
       font-size: 20px;
-      color: map-get($secondary-color, 800);
+      color: map-get($primary-color, 500);
     }
   }
 }
