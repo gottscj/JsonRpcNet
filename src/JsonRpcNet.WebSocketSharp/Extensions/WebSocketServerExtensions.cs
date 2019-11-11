@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using JsonRpcNet.Attributes;
 using JsonRpcNet.Docs;
 using WebSocketSharp;
+using WebSocketSharp.Net;
 using WebSocketSharp.Server;
 
 namespace JsonRpcNet.WebSocketSharp.Extensions
@@ -32,18 +35,22 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 			{
 				var referer = e.Request.UrlReferrer?.AbsolutePath ?? "";
 				var requestPath = referer + e.Request.Url.AbsolutePath;
+				if (requestPath.StartsWith("//"))
+				{
+					requestPath = requestPath.Substring(1);
+				}
 				var file = JsonRpcFileReader.GetFile(requestPath, jsonRpcInfo);
 				if (!file.Exist)
 				{
 					return;
 				}
 				e.Response.ContentType = MimeTypeProvider.Get(file.Extension);
+				e.Response.ContentEncoding = Encoding.UTF8;
+				
 				e.Response.StatusCode = 200;
+				
 				e.Response.WriteContent(file.Buffer);
 			};
 		}
-		
-		
-
 	}
 }

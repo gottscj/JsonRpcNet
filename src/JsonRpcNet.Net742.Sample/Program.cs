@@ -9,7 +9,8 @@ namespace JsonRpcNet.Net742.Sample
     {
         static void Main(string[] args)
         {
-            var server = new HttpServer(5000);
+            int port = 5000;
+            var server = new HttpServer(port);
 
             server.AddJsonRpcService(() => new ChatJsonRpcWebSocketService());
             server.UseJsonRpcApi(new JsonRpcInfo
@@ -25,7 +26,7 @@ namespace JsonRpcNet.Net742.Sample
 
             server.Start();
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"Now listening on: http://localhost:{port}");
             Console.ReadLine();
             server.Stop();
         }

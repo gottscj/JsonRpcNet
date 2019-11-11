@@ -66,8 +66,14 @@ namespace JsonRpcNet.AspNetCore.Sample
 
         protected override Task OnConnected()
         {
-            Console.WriteLine($"{GetType().Name} started...");
+            Console.WriteLine($"{GetType().Name} Connect...");
             return base.OnConnected();
+        }
+
+        protected override Task OnDisconnected(CloseStatusCode code, string reason)
+        {
+            Console.WriteLine($"{GetType().Name} Disconnected with code: " + code.ToString());
+            return base.OnDisconnected(code, reason);
         }
     }
 

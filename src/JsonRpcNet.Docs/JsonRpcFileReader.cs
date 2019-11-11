@@ -90,7 +90,7 @@ namespace JsonRpcNet.Docs
                 var schemaJObject = JObject.Parse(schema.ToJson());
                 jDoc["definitions"] = schemaJObject["definitions"];
                 
-                var buffer= Encoding.UTF8.GetBytes(jDoc.ToString(Formatting.None));
+                var buffer = Encoding.UTF8.GetBytes(jDoc.ToString(Formatting.None));
                 
                 var fileResult = new FileContent(requestPath, buffer);
                 
