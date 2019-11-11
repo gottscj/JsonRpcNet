@@ -80,7 +80,10 @@ namespace JsonRpcNet.Docs
 
                     foreach (var notification in rpcService.Notifications)
                     {
-                        generator.Generate(notification.Parameter.Type, resolver);
+                        foreach (var parameter in notification.Parameters)
+                        {
+                            generator.Generate(parameter.Type, resolver);
+                        }
                     }
                 }
 
