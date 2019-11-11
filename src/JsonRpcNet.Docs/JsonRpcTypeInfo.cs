@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NJsonSchema;
@@ -19,9 +20,17 @@ namespace JsonRpcNet.Docs
 
         public JsonRpcTypeInfo(string name, Type type)
         {
-            Type = type;
+            if (typeof(Task).IsAssignableFrom(type) && type.IsGenericType)
+            {
+                Type = type.GetGenericArguments().Single();
+            }
+            else
+            {
+                Type = type; 
+            }
+            
             Name = name;
-            var schemaType = JsonTypeHelper.GetSchemaTypeString(type);
+            var schemaType = JsonTypeHelper.GetSchemaTypeString(Type);
             Schema = new Dictionary<string, object>
             {
                 ["type"] = schemaType
@@ -29,12 +38,12 @@ namespace JsonRpcNet.Docs
 
             if (schemaType == "object")
             {
-                Schema["$ref"] = $"#/definitions/{type.Name}";
+                Schema["$ref"] = $"#/definitions/{Type.Name}";
             }
             else if (schemaType == "array")
             {
 
-                var arrayType = type.IsArray ? type.GetElementType() : type.GetGenericArguments().Single();
+                var arrayType = Type.IsArray ? Type.GetElementType() : Type.GetGenericArguments().Single();
                 if (arrayType == null)
                 {
                     throw new InvalidOperationException($"Could not get element type for given type: {type}");

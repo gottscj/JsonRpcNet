@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JsonRpcNet.Docs
 {
@@ -23,7 +24,7 @@ namespace JsonRpcNet.Docs
                 case TypeCode.Int64: return "integer";
                 case TypeCode.Object: 
                 {
-                    if (type == typeof(void))
+                    if (type == typeof(void) || type == typeof(Task))
                     {
                         return "void";
                     }

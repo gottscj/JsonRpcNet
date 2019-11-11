@@ -16,7 +16,10 @@ namespace JsonRpcNet.Docs
             }
 
             var eventHandlerType = eventInfo.EventHandlerType.GetGenericArguments().Single();
-            Parameter = new JsonRpcTypeInfo(eventHandlerType);
+            Parameters = new List<JsonRpcTypeInfo>
+            {
+                new JsonRpcTypeInfo("eventArgs", eventHandlerType)
+            };   
         }
         
         [JsonProperty("name")]
@@ -26,6 +29,6 @@ namespace JsonRpcNet.Docs
         public string Description { get; set; } = string.Empty;
         
         [JsonProperty("params")]
-        public JsonRpcTypeInfo Parameter { get; }
+        public IList<JsonRpcTypeInfo> Parameters { get; }
     }
 }
