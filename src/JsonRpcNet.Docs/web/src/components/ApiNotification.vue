@@ -1,11 +1,20 @@
 <template>
   <div id="ApiNotification">
     <button
-      class="accordion"
-      v-bind:style="{ 'border-radius': accordionBorderRadius }"
+      v-bind:class="{
+        'accordion-expanded': expanded,
+        'accordion-collapsed': !expanded
+      }"
       @click="toggleAccordion"
     >
-      <div class="notification-name">{{ notification.name }}</div>
+      <div
+        v-bind:class="{
+          'notification-name-expanded': expanded,
+          'notification-name-collapsed': !expanded
+        }"
+      >
+        {{ notification.name }}
+      </div>
       <div class="notification-description">{{ notification.description }}</div>
     </button>
     <div v-if="expanded" class="panel">
@@ -20,8 +29,7 @@ export default {
   name: "ApiNotification",
   data: function() {
     return {
-      expanded: false,
-      accordionBorderRadius: "5px"
+      expanded: false
     };
   },
   props: {
@@ -34,7 +42,6 @@ export default {
   methods: {
     toggleAccordion() {
       this.expanded = !this.expanded;
-      this.accordionBorderRadius = this.expanded ? "5px 5px 0px 0px" : "5px";
     }
   }
 };
@@ -55,10 +62,23 @@ export default {
     outline: none;
     font-size: 15px;
     display: flex;
-    border-radius: 5px 5px 0px 0px;
     border-style: solid;
-    border-color: map-get($accent-color, 300);
     border-width: 1px;
+  }
+
+  .accordion-expanded {
+    @extend .accordion;
+    margin-left: -8px;
+    border-radius: 5px 5px 0px 0px;
+    border-color: map-get($accent-color, 400);
+    box-shadow: 3px 3px 3px 0 map-get($accent-color, 100),
+      3px 3px 3px 0 map-get($accent-color, 100);
+  }
+
+  .accordion-collapsed {
+    @extend .accordion;
+    border-radius: 5px;
+    border-color: map-get($accent-color, 300);
     box-shadow: 2px 2px 2px 0 map-get($accent-color, 50),
       2px 2px 2px 0 map-get($accent-color, 50);
   }
@@ -70,23 +90,35 @@ export default {
     overflow: hidden;
     border-radius: 0px 0px 5px 5px;
     border-style: solid;
-    border-color: map-get($accent-color, 300);
+    border-color: map-get($accent-color, 400);
     border-width: 1px;
     border-top: none;
-    box-shadow: 2px 2px 2px 0 map-get($accent-color, 50),
-      2px 2px 2px 0 map-get($accent-color, 50);
+    margin-left: -8px;
+    margin-right: 8px;
+    box-shadow: 3px 3px 3px 0 map-get($accent-color, 100),
+      3px 3px 3px 0 map-get($accent-color, 100);
   }
 
   .notification-name {
     color: $light-text;
-    background-color: map-get($accent-color, 400);
     font-size: 15px;
     padding: 7px;
     margin-right: 10px;
     border-radius: 5px;
     border-style: solid;
-    border-color: map-get($accent-color, 400);
     border-width: 1px;
+  }
+
+  .notification-name-expanded {
+    @extend .notification-name;
+    border-color: map-get($accent-color, 700);
+    background-color: map-get($accent-color, 700);
+  }
+
+  .notification-name-collapsed {
+    @extend .notification-name;
+    border-color: map-get($accent-color, 400);
+    background-color: map-get($accent-color, 400);
   }
 
   .notification-description {

@@ -1,11 +1,20 @@
 <template>
   <div id="ApiMethod">
     <button
-      class="accordion"
-      v-bind:style="{ 'border-radius': accordionBorderRadius }"
+      v-bind:class="{
+        'accordion-expanded': expanded,
+        'accordion-collapsed': !expanded
+      }"
       @click="toggleAccordion"
     >
-      <div class="method-name">{{ method.name }}</div>
+      <div
+        v-bind:class="{
+          'method-name-expanded': expanded,
+          'method-name-collapsed': !expanded
+        }"
+      >
+        {{ method.name }}
+      </div>
       <div class="method-description">{{ method.description }}</div>
     </button>
     <div v-if="expanded" class="panel">
@@ -59,7 +68,6 @@ export default {
   data: function() {
     return {
       expanded: false,
-      accordionBorderRadius: "5px",
       parametersJson: "",
       websocketResponseOk: null,
       websocketResponseError: null,
@@ -80,7 +88,6 @@ export default {
   methods: {
     toggleAccordion() {
       this.expanded = !this.expanded;
-      this.accordionBorderRadius = this.expanded ? "5px 5px 0px 0px" : "5px";
     },
     onParametersChanged(value) {
       this.parametersJson = value;
@@ -159,10 +166,23 @@ export default {
     outline: none;
     font-size: 15px;
     display: flex;
-    border-radius: 5px 5px 0px 0px;
     border-style: solid;
-    border-color: map-get($secondary-color, A200);
     border-width: 1px;
+  }
+
+  .accordion-expanded {
+    @extend .accordion;
+    margin-left: -8px;
+    border-radius: 5px 5px 0px 0px;
+    border-color: map-get($secondary-color, 400);
+    box-shadow: 3px 3px 3px 0 map-get($secondary-color, 100),
+      3px 3px 3px 0 map-get($secondary-color, 100);
+  }
+
+  .accordion-collapsed {
+    @extend .accordion;
+    border-radius: 5px;
+    border-color: map-get($secondary-color, A200);
     box-shadow: 2px 2px 2px 0 map-get($secondary-color, 50),
       2px 2px 2px 0 map-get($secondary-color, 50);
   }
@@ -174,23 +194,35 @@ export default {
     overflow: hidden;
     border-radius: 0px 0px 5px 5px;
     border-style: solid;
-    border-color: map-get($secondary-color, A200);
+    border-color: map-get($secondary-color, 400);
     border-width: 1px;
+    margin-left: -8px;
+    margin-right: 8px;
     border-top: none;
-    box-shadow: 2px 2px 2px 0 map-get($secondary-color, 50),
-      2px 2px 2px 0 map-get($secondary-color, 50);
+    box-shadow: 3px 3px 3px 0 map-get($secondary-color, 100),
+      3px 3px 3px 0 map-get($secondary-color, 100);
   }
 
   .method-name {
     color: $light-text;
-    background-color: map-get($secondary-color, 400);
     font-size: 15px;
     padding: 7px;
     margin-right: 10px;
     border-radius: 5px;
     border-style: solid;
-    border-color: map-get($secondary-color, 400);
     border-width: 1px;
+  }
+
+  .method-name-expanded {
+    @extend .method-name;
+    border-color: map-get($secondary-color, 800);
+    background-color: map-get($secondary-color, 800);
+  }
+
+  .method-name-collapsed {
+    @extend .method-name;
+    border-color: map-get($secondary-color, 500);
+    background-color: map-get($secondary-color, 500);
   }
 
   .method-description {
