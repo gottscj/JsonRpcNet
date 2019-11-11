@@ -45,7 +45,10 @@
 <script>
 import ApiMethodParameters from "./ApiMethodParameters.vue";
 import ActionButtonWithStatus from "./ActionButtonWithStatus.vue";
-import * as ws from "jsonrpc-client-websocket";
+import {
+  JsonRpcWebsocket,
+  WebsocketReadyStates
+} from "jsonrpc-client-websocket";
 
 export default {
   name: "ApiMethod",
@@ -66,7 +69,7 @@ export default {
     };
   },
   props: {
-    wsPath: String,
+    websocket: JsonRpcWebsocket,
     method: {
       name: String,
       description: String,
@@ -93,31 +96,24 @@ export default {
         this.callStatus = "loading";
       }, 1000);
 
-      const websocket = new ws.JsonRpcWebsocket(this.wsPath, 2000);
-
-      try {
-        await websocket.open();
-      } catch (error) {
-        this.callStatusText = "Failed to establish connection";
-      }
-
-      this.websocketTriedToConnect = true;
-
-      if (websocket.state !== ws.WebsocketReadyStates.OPEN) {
+      if (
+        !this.websocket ||
+        this.websocket.state !== WebsocketReadyStates.OPEN
+      ) {
         clearTimeout(timeout);
         this.callInProgress = false;
         this.callStatus = "error";
+        this.callStatusText = "The service must be connected";
         this.websocketResponseOk = null;
         this.websocketResponseError = null;
         return;
       }
 
-      websocket
+      this.websocket
         .call(this.method.name, this.parametersJson)
         .then(response => {
           this.websocketResponseOk = JSON.stringify(response, null, 2);
           this.websocketResponseError = null;
-          websocket.close();
           clearTimeout(timeout);
           this.callInProgress = false;
           this.callStatus = "ok";
@@ -125,7 +121,6 @@ export default {
         .catch(error => {
           this.websocketResponseError = JSON.stringify(error, null, 2);
           this.websocketResponseOk = null;
-          websocket.close();
           clearTimeout(timeout);
           this.callInProgress = false;
           this.callStatus = "ok";
@@ -186,11 +181,6 @@ export default {
       2px 2px 2px 0 map-get($secondary-color, 50);
   }
 
-  .service-arrow {
-    height: 15px;
-    padding: 10px 10px 0px 10px;
-  }
-
   .method-name {
     color: $light-text;
     background-color: map-get($secondary-color, 400);
@@ -210,7 +200,7 @@ export default {
   .method-subtitle {
     padding: 10px;
     font-size: 14px;
-    color: map-get($secondary-color, 500);
+    color: map-get($primary-color, 900);
     background: map-get($secondary-color, 50);
   }
 
