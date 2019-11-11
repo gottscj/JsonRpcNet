@@ -240,7 +240,7 @@ export default {
   }
 
   .service-group-element {
-    padding: 5px;
+    padding: 8px;
   }
 }
 </style>
