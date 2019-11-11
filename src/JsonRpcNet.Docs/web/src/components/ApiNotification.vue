@@ -9,7 +9,7 @@
       <div class="notification-description">{{ notification.description }}</div>
     </button>
     <div v-if="expanded" class="panel">
-      <div class="notification-subtitle">Notification definition</div>
+      <div class="notification-subtitle">Parameters definition</div>
       <div class="notification-definition">{{ notification.params }}</div>
     </div>
   </div>
