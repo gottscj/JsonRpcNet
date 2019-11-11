@@ -206,7 +206,8 @@ export default {
     position: fixed;
     z-index: 1;
     overflow-x: hidden;
-    padding-top: 20px;
+    overflow: scroll;
+    padding-bottom: 45px;
   }
 
   .left {

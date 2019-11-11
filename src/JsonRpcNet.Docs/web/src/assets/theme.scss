@@ -64,3 +64,21 @@ $theme-colors: (
 @import '../../node_modules/bootstrap/scss/bootstrap';
 @import '../../node_modules/bootstrap-vue/src/index.scss';
 
+// scroll-bar
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(44, 44, 44, 0.1); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(255,255,255,0.5); 
+}

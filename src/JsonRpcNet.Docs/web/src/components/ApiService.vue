@@ -29,7 +29,7 @@
         </BButton>
       </div>
 
-      <div class="service-group">
+      <div v-if="service.methods.length > 0" class="service-group">
         <div class="service-group-title">
           Methods
         </div>
@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <div class="service-group">
+      <div v-if="service.notifications.length > 0" class="service-group">
         <div class="service-group-title">
           Notifications
         </div>
