@@ -46,7 +46,8 @@ namespace JsonRpcNet.WebSocketSharp.Extensions
 				}
 				e.Response.ContentType = MimeTypeProvider.Get(file.Extension);
 				e.Response.ContentEncoding = Encoding.UTF8;
-				
+				// allow cors
+				e.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 				e.Response.StatusCode = 200;
 				
 				e.Response.WriteContent(file.Buffer);
