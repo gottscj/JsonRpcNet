@@ -12,8 +12,8 @@ namespace JsonRpcNet.Models
 		{
 			Converters = new List<JsonConverter> { new StringEnumConverter(new CamelCaseNamingStrategy()) },
 			ContractResolver = new CamelCasePropertyNamesContractResolver(),
-			
 		};
+
 		public static JsonSerializerSettings SerializerSettings
 		{
 			get => _serializerSettings;

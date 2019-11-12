@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { JsonRpcWebsocket } from "jsonrpc-client-websocket";
+
 export default {
   name: "ApiNotification",
   data: function() {
@@ -37,11 +39,23 @@ export default {
       name: String,
       description: String,
       params: {}
+    },
+    websocket: JsonRpcWebsocket
+  },
+  watch: {
+    websocket: function() {
+      this.listenToNotification();
     }
   },
   methods: {
     toggleAccordion() {
       this.expanded = !this.expanded;
+    },
+    listenToNotification() {
+      this.websocket.on(this.notification.name, function(eventArgs) {
+        // eslint-disable-next-line
+        console.log(eventArgs);
+      });
     }
   }
 };

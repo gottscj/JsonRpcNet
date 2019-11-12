@@ -52,6 +52,7 @@
         >
           <ApiNotification
             class="service-group-element"
+            v-bind:websocket="websocket"
             v-bind:notification="notification"
           />
         </div>
@@ -139,6 +140,13 @@ export default {
     },
     websocketErrorCallback(error) {
       this.connectionError = error.message;
+
+      if (error.code !== 1006) {
+        // close event
+        // eslint-disable-next-line
+        console.warn(error);
+      }
+
       this.connectionStatus =
         this.websocket && this.websocket.state === WebsocketReadyStates.OPEN
           ? ConnectionStatus.Connected

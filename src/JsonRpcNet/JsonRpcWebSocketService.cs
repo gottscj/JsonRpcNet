@@ -37,13 +37,13 @@ namespace JsonRpcNet
 
 		private void InvokeNotification(EventInfo eventInfo, EventArgs e)
 		{
-			var notificationObject = new JObject
-			{
-				["jsonrpc"] = "2.0",
-				["method"] = eventInfo.Name,
-				["params"] = JsonConvert.SerializeObject(new []{e}, JsonRpcContract.SerializerSettings)
+            var notificationObject = new JObject
+            {
+                ["jsonrpc"] = "2.0",
+                ["method"] = eventInfo.Name,
+                ["params"] = new JArray(JObject.FromObject(e))
 			};
-			SendAsync(notificationObject.ToString())
+            SendAsync(JsonConvert.SerializeObject(notificationObject, JsonRpcContract.SerializerSettings))
 				.ContinueWith(t => Console.WriteLine("Notification send result: " + t.Status));
 		}
 		
