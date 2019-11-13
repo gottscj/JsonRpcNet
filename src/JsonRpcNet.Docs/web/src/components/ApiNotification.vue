@@ -16,6 +16,7 @@
         {{ notification.name }}
       </div>
       <div class="notification-description">{{ notification.description }}</div>
+      <BFormCheckbox class="notification-enable" switch v-model="listening" />
     </button>
     <div v-if="expanded" class="panel">
       <div class="notification-subtitle">Parameters definition</div>
@@ -26,15 +27,23 @@
 
 <script>
 import { JsonRpcWebsocket } from "jsonrpc-client-websocket";
+import { BFormCheckbox } from "bootstrap-vue";
 
 export default {
   name: "ApiNotification",
+  components: {
+    BFormCheckbox
+  },
   data: function() {
     return {
-      expanded: false
+      expanded: false,
+      listening: this.value
     };
   },
   props: {
+    value: {
+      type: Boolean
+    },
     notification: {
       name: String,
       description: String,
@@ -44,18 +53,33 @@ export default {
   },
   watch: {
     websocket: function() {
-      this.listenToNotification();
+      this.updateNotificationListening();
+    },
+    listening: function() {
+      this.updateNotificationListening();
+      this.$emit("input", this.listening);
+    },
+    value: function() {
+      this.listening = this.value;
     }
   },
   methods: {
     toggleAccordion() {
       this.expanded = !this.expanded;
     },
-    listenToNotification() {
-      this.websocket.on(this.notification.name, function(eventArgs) {
-        // eslint-disable-next-line
-        console.log(eventArgs);
-      });
+    updateNotificationListening() {
+      if (this.websocket) {
+        if (this.listening) {
+          // eslint-disable-next-line
+          this.websocket.on(this.notification.name, function(eventArgs) {
+            // eslint-disable-next-line
+            console.log(eventArgs);
+          });
+        } else {
+          // eslint-disable-next-line
+          this.websocket.on(this.notification.name, function(eventArgs) {});
+        }
+      }
     }
   }
 };
@@ -137,6 +161,12 @@ export default {
 
   .notification-description {
     padding: 7px;
+  }
+
+  .notification-enable {
+    padding: 7px;
+    margin-left: auto;
+    margin-right: 0;
   }
 
   .notification-subtitle {

@@ -44,16 +44,19 @@
 
       <div v-if="service.notifications.length > 0" class="service-group">
         <div class="service-group-title">
-          Notifications
+          <BFormCheckbox switch v-model="enableAllNotifications" size="lg">
+            Notifications
+          </BFormCheckbox>
         </div>
         <div
-          v-for="notification in service.notifications"
+          v-for="(notification, index) in service.notifications"
           v-bind:key="notification.name"
         >
           <ApiNotification
             class="service-group-element"
             v-bind:websocket="websocket"
             v-bind:notification="notification"
+            v-model="notificationsState[index]"
           />
         </div>
       </div>
@@ -64,7 +67,7 @@
 <script>
 import ApiMethod from "./ApiMethod.vue";
 import ApiNotification from "./ApiNotification.vue";
-import { BBadge, BButton } from "bootstrap-vue";
+import { BBadge, BButton, BFormCheckbox } from "bootstrap-vue";
 import {
   JsonRpcWebsocket,
   WebsocketReadyStates
@@ -81,7 +84,8 @@ export default {
     ApiMethod,
     ApiNotification,
     BBadge,
-    BButton
+    BButton,
+    BFormCheckbox
   },
   data: function() {
     return {
@@ -89,8 +93,22 @@ export default {
       panelDisplay: "block",
       connectionStatus: ConnectionStatus.Disconnected,
       connectionError: "",
-      websocket: void 0
+      websocket: void 0,
+      notificationsState: [],
+      enableAllNotifications: true
     };
+  },
+  watch: {
+    enableAllNotifications: function() {
+      if (this.allNotificationsEnabled != this.enableAllNotifications) {
+        this.notificationsState = Array(this.service.notifications.length).fill(
+          this.enableAllNotifications
+        );
+      }
+    },
+    allNotificationsEnabled: function() {
+      this.enableAllNotifications = this.allNotificationsEnabled;
+    }
   },
   props: {
     serverInfo: void 0,
@@ -101,6 +119,11 @@ export default {
       methods: [],
       notifications: []
     }
+  },
+  created() {
+    this.notificationsState = Array(this.service.notifications.length).fill(
+      this.enableAllNotifications
+    );
   },
   methods: {
     toggleAccordion() {
@@ -156,6 +179,9 @@ export default {
   computed: {
     wsPath: function() {
       return this.serverInfo.ws + this.service.path;
+    },
+    allNotificationsEnabled: function() {
+      return this.notificationsState.every(x => x === true);
     }
   }
 };
