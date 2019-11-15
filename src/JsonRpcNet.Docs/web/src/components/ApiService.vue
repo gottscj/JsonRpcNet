@@ -10,7 +10,8 @@
       >
         {{ this.connectionStatus }}
       </BBadge>
-      <div v-if="expanded" class="service-arrow" style="margin: 0 0 0 auto">
+      <BFormCheckbox class="service-connection" switch v-model="connectService" size="lg"/>
+      <div v-if="expanded" class="service-arrow">
         <img class="service-arrow-icon" src="../assets/down-arrow.svg" />
       </div>
       <div v-else class="service-arrow">
@@ -18,17 +19,6 @@
       </div>
     </button>
     <div class="panel" v-bind:style="{ display: panelDisplay }">
-      <div class="service-connection" @click="toggleWebsocketConnection">
-        <BButton
-          size="sm"
-          v-bind:variant="
-            this.connectionStatus === 'connected' ? 'danger' : 'success'
-          "
-        >
-          {{ this.connectionStatus === "connected" ? "Disconnect" : "Connect" }}
-        </BButton>
-      </div>
-
       <div v-if="service.methods.length > 0" class="service-group">
         <div class="service-group-title">
           Methods
@@ -91,6 +81,7 @@ export default {
     return {
       expanded: true,
       panelDisplay: "block",
+      connectService: false,
       connectionStatus: ConnectionStatus.Disconnected,
       connectionError: "",
       websocket: void 0,
@@ -108,6 +99,12 @@ export default {
     },
     allNotificationsEnabled: function() {
       this.enableAllNotifications = this.allNotificationsEnabled;
+    },
+    connectService: function() {
+      if ((this.connectService === true && (!this.websocket || this.websocket.state !== WebsocketReadyStates.OPEN)) ||
+          (this.connectService === false && this.websocket && this.websocket.state === WebsocketReadyStates.OPEN)) {
+        this.toggleWebsocketConnection();
+      }
     }
   },
   props: {
@@ -154,11 +151,13 @@ export default {
         this.websocket.state === WebsocketReadyStates.OPEN
           ? ConnectionStatus.Connected
           : ConnectionStatus.Disconnected;
+      this.connectService = this.websocket.state === WebsocketReadyStates.OPEN ? true : false;
     },
     disconnect() {
       this.websocket.close();
       this.websocket = void 0;
       this.connectionStatus = ConnectionStatus.Disconnected;
+      this.connectService = false;
       this.connectionError = "";
     },
     websocketErrorCallback(error) {
@@ -174,6 +173,7 @@ export default {
         this.websocket && this.websocket.state === WebsocketReadyStates.OPEN
           ? ConnectionStatus.Connected
           : ConnectionStatus.Disconnected;
+      this.connectService = this.websocket && this.websocket.state === WebsocketReadyStates.OPEN ? true : false;
     }
   },
   computed: {
@@ -215,8 +215,9 @@ export default {
   }
 
   .service-connection {
-    margin: 10px 0px 0px 10px;
-    width: 50px;
+    padding: 5px;
+    margin-right: 0px;
+    margin-left: auto;
   }
 
   .service-online {
@@ -256,7 +257,8 @@ export default {
   .service-arrow {
     height: 40px;
     line-height: 40px;
-    margin: 0 0 0 auto;
+    margin-right: 0;
+    margin-left: 10px;
   }
 
   .service-arrow-icon {
