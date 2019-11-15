@@ -50,7 +50,11 @@
       </div>
     </div>
 
-    <div class="split right"></div>
+    <div class="split right">
+      <NotificationPanel
+        v-bind:notifications="$root.$data.notificationsService.notifications"
+      />
+    </div>
   </div>
 </template>
 
@@ -64,6 +68,7 @@ import {
   BNavbarNav,
   BNavbarBrand
 } from "bootstrap-vue";
+import NotificationPanel from "./components/NotificationPanel.vue";
 import SearchBox from "./components/SearchBox.vue";
 import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
 
@@ -77,6 +82,7 @@ export default {
     BNavbar,
     BNavbarBrand,
     BNavbarNav,
+    NotificationPanel,
     SearchBox
   },
   data: function() {
@@ -123,6 +129,8 @@ export default {
       const selectedServerInfo = this.servers.filter(
         x => x.name === this.selectedServer
       )[0];
+
+      this.$root.$data.notificationsService.reset();
 
       this.apiInfo = void 0;
       this.apiInfoErrorMessage = void 0;

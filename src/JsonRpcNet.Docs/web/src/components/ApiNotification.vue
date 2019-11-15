@@ -71,9 +71,14 @@ export default {
       if (this.websocket) {
         if (this.listening) {
           // eslint-disable-next-line
+          var func = (eventArgs) => {
+            this.$root.$data.notificationsService.addNotification(
+              this.notification.name,
+              JSON.stringify(eventArgs)
+            );
+          };
           this.websocket.on(this.notification.name, function(eventArgs) {
-            // eslint-disable-next-line
-            console.log(eventArgs);
+            func(eventArgs);
           });
         } else {
           // eslint-disable-next-line
