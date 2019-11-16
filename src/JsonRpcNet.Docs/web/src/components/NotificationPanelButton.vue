@@ -2,7 +2,10 @@
   <div id="NotificationPanelButton">
     <BButton class="notification-button" v-on:click="$emit('click')">
       <img class="notification-icon" src="../assets/notification.svg" />
-      <BBadge class="notification-count" v-if="numberOfNotifications > 0">{{ numberOfNotifications }}</BBadge></BButton>
+      <BBadge class="notification-count" v-if="numberOfNotifications > 0">{{
+        numberOfNotifications
+      }}</BBadge>
+    </BButton>
   </div>
 </template>
 
@@ -23,7 +26,8 @@ export default {
 
 <style lang="scss" scoped>
 #NotificationPanelButton {
-  .btn:focus, .btn:active {
+  .btn:focus,
+  .btn:active {
     outline: none !important;
     box-shadow: none;
   }
@@ -34,11 +38,11 @@ export default {
     border-radius: 50px;
     background: none;
     border: none;
+    margin-right: -15px;
   }
 
   .notification-icon {
     height: 35px;
-    margin-right: -15px;
   }
 
   .notification-count {
@@ -47,7 +51,7 @@ export default {
     border-radius: 50px;
     position: absolute;
     top: 0px;
-    right: -7px;
+    right: 7px;
   }
 }
 </style>

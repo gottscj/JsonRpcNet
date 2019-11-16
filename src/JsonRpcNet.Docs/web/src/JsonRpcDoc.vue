@@ -31,7 +31,8 @@
 
     <div
       class="split left"
-      v-bind:style="{ width: showNotifications ? '80%' : '100%' }">
+      v-bind:style="{ width: showNotifications ? '80%' : '100%' }"
+    >
       <div v-if="apiInfo !== void 0">
         <div class="apiInfo">
           <ApiInfo v-bind:info="apiInfo.info" />
@@ -52,13 +53,18 @@
       </div>
       <NotificationPanelButton
         class="notifications-button"
-        v-bind:numberOfNotifications="$root.$data.notificationsService.notifications.length"
+        v-bind:numberOfNotifications="
+          $root.$data.notificationsService.notifications.length
+        "
         v-bind:checked="false"
         v-on:click="showNotifications = !showNotifications"
       />
     </div>
 
-    <div class="split right" v-bind:style="{ width: showNotifications ? '20%' : '0%' }">
+    <div
+      class="split right"
+      v-bind:style="{ width: showNotifications ? '20%' : '0%' }"
+    >
       <NotificationPanel
         v-bind:notifications="$root.$data.notificationsService.notifications"
       />
