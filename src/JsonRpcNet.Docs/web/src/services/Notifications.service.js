@@ -45,11 +45,11 @@ export class NotificationsService {
     }, this.cleanUpIntervalMs);
   }
 
-  reset() {
+  clearAll() {
     this.notifications = [];
   }
 
-  addNotification(title, content) {
+  add(title, content) {
     const notification = new Notification(title, content);
     this.notifications.unshift(notification);
   }

@@ -72,7 +72,7 @@ export default {
         if (this.listening) {
           // eslint-disable-next-line
           var func = (eventArgs) => {
-            this.$root.$data.notificationsService.addNotification(
+            this.$root.$data.notificationsService.add(
               this.notification.name,
               JSON.stringify(eventArgs)
             );

@@ -10,7 +10,12 @@
       >
         {{ this.connectionStatus }}
       </BBadge>
-      <BFormCheckbox class="service-connection" switch v-model="connectService" size="lg"/>
+      <BFormCheckbox
+        class="service-connection"
+        switch
+        v-model="connectService"
+        size="lg"
+      />
       <div v-if="expanded" class="service-arrow">
         <img class="service-arrow-icon" src="../assets/down-arrow.svg" />
       </div>
@@ -57,7 +62,7 @@
 <script>
 import ApiMethod from "./ApiMethod.vue";
 import ApiNotification from "./ApiNotification.vue";
-import { BBadge, BButton, BFormCheckbox } from "bootstrap-vue";
+import { BBadge, BFormCheckbox } from "bootstrap-vue";
 import {
   JsonRpcWebsocket,
   WebsocketReadyStates
@@ -74,7 +79,6 @@ export default {
     ApiMethod,
     ApiNotification,
     BBadge,
-    BButton,
     BFormCheckbox
   },
   data: function() {
@@ -101,8 +105,14 @@ export default {
       this.enableAllNotifications = this.allNotificationsEnabled;
     },
     connectService: function() {
-      if ((this.connectService === true && (!this.websocket || this.websocket.state !== WebsocketReadyStates.OPEN)) ||
-          (this.connectService === false && this.websocket && this.websocket.state === WebsocketReadyStates.OPEN)) {
+      if (
+        (this.connectService === true &&
+          (!this.websocket ||
+            this.websocket.state !== WebsocketReadyStates.OPEN)) ||
+        (this.connectService === false &&
+          this.websocket &&
+          this.websocket.state === WebsocketReadyStates.OPEN)
+      ) {
         this.toggleWebsocketConnection();
       }
     }
@@ -151,7 +161,8 @@ export default {
         this.websocket.state === WebsocketReadyStates.OPEN
           ? ConnectionStatus.Connected
           : ConnectionStatus.Disconnected;
-      this.connectService = this.websocket.state === WebsocketReadyStates.OPEN ? true : false;
+      this.connectService =
+        this.websocket.state === WebsocketReadyStates.OPEN ? true : false;
     },
     disconnect() {
       this.websocket.close();
@@ -173,7 +184,10 @@ export default {
         this.websocket && this.websocket.state === WebsocketReadyStates.OPEN
           ? ConnectionStatus.Connected
           : ConnectionStatus.Disconnected;
-      this.connectService = this.websocket && this.websocket.state === WebsocketReadyStates.OPEN ? true : false;
+      this.connectService =
+        this.websocket && this.websocket.state === WebsocketReadyStates.OPEN
+          ? true
+          : false;
     }
   },
   computed: {

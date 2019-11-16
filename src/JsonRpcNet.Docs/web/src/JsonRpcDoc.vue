@@ -130,7 +130,7 @@ export default {
         x => x.name === this.selectedServer
       )[0];
 
-      this.$root.$data.notificationsService.reset();
+      this.$root.$data.notificationsService.clearAll();
 
       this.apiInfo = void 0;
       this.apiInfoErrorMessage = void 0;
