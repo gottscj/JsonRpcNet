@@ -29,7 +29,9 @@
       {{ this.configErrorMessage }}
     </div>
 
-    <div class="split left">
+    <div
+      class="split left"
+      v-bind:style="{ width: showNotifications ? '80%' : '100%' }">
       <div v-if="apiInfo !== void 0">
         <div class="apiInfo">
           <ApiInfo v-bind:info="apiInfo.info" />
@@ -48,9 +50,15 @@
           </div>
         </div>
       </div>
+      <NotificationPanelButton
+        class="notifications-button"
+        v-bind:numberOfNotifications="$root.$data.notificationsService.notifications.length"
+        v-bind:checked="false"
+        v-on:click="showNotifications = !showNotifications"
+      />
     </div>
 
-    <div class="split right">
+    <div class="split right" v-bind:style="{ width: showNotifications ? '20%' : '0%' }">
       <NotificationPanel
         v-bind:notifications="$root.$data.notificationsService.notifications"
       />
@@ -69,6 +77,7 @@ import {
   BNavbarBrand
 } from "bootstrap-vue";
 import NotificationPanel from "./components/NotificationPanel.vue";
+import NotificationPanelButton from "./components/NotificationPanelButton.vue";
 import SearchBox from "./components/SearchBox.vue";
 import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
 
@@ -83,6 +92,7 @@ export default {
     BNavbarBrand,
     BNavbarNav,
     NotificationPanel,
+    NotificationPanelButton,
     SearchBox
   },
   data: function() {
@@ -103,7 +113,8 @@ export default {
           docs: String
         }
       ],
-      searchString: ""
+      searchString: "",
+      showNotifications: false
     };
   },
   methods: {
@@ -149,6 +160,9 @@ export default {
             errorText;
         }
       );
+    },
+    toggleNotificationPanel() {
+      this.showNotifications = !this.showNotifications;
     }
   },
   computed: {
@@ -248,6 +262,13 @@ export default {
       font-size: 20px;
       color: map-get($primary-color, 500);
     }
+  }
+
+  .notifications-button {
+    float: right;
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
 }
 </style>
