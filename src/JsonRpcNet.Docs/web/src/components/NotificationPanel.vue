@@ -6,7 +6,8 @@
         v-for="(note, index) in notifications"
         v-bind:key="`note-${index}`"
       >
-        [{{ note.timestampStr() }}] {{ note.title }}
+        {{ note.title }}
+        <div class="notification-timestamp">{{ note.timestampStr() }}</div>
       </div>
     </div>
   </div>
@@ -32,7 +33,7 @@ export default {
     background-color: map-get($accent-color, 30);
     color: inherit;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     width: 100%;
     margin-top: 4px;
     margin-bottom: 4px;
@@ -43,6 +44,16 @@ export default {
     border-width: 1px;
     border-radius: 5px 5px 5px 5px;
     border-color: map-get($accent-color, 400);
+  }
+
+  .notification-timestamp {
+    float: right;
+    height: 20px;
+    background-color: map-get($accent-color, 100);
+    color: map-get($primary-color, 900);
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 3px 3px 3px 3px;
   }
 }
 </style>

@@ -12,7 +12,7 @@ export class Notification {
     const d = this.timestamp;
 
     /* eslint-disable */
-    return `${(d.getMonth()+1).toString().padStart(2, '0')}/${
+    return `${(d.getMonth() + 1).toString().padStart(2, '0')}/${
       d.getDate().toString().padStart(2, '0')}/${
       d.getFullYear().toString().padStart(4, '0')} ${
       d.getHours().toString().padStart(2, '0')}:${
@@ -39,9 +39,11 @@ export class NotificationsService {
 
     // cleanup loop
     setInterval(() => {
-      this.notifications = this.notifications
-        .filter(n => !n.isExpired(this.notificationTimeoutMs))
-        .slice(0, this.maxNotifications - 1);
+      this.notifications = [
+        ...this.notifications
+          .filter(n => !n.isExpired(this.notificationTimeoutMs))
+          .slice(0, this.maxNotifications - 1)
+      ];
     }, this.cleanUpIntervalMs);
   }
 
@@ -51,6 +53,6 @@ export class NotificationsService {
 
   add(title, content) {
     const notification = new Notification(title, content);
-    this.notifications.unshift(notification);
+    this.notifications = [notification, ...this.notifications];
   }
 }
