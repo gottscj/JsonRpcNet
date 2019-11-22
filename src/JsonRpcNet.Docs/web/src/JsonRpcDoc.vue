@@ -29,11 +29,11 @@
       {{ this.configErrorMessage }}
     </div>
 
-    <div
-      class="split left"
-      v-bind:style="{ width: showNotifications ? '80%' : '100%' }"
-    >
-      <div v-if="apiInfo !== void 0">
+    <div v-if="apiInfo !== void 0">
+      <div
+        class="split left"
+        v-bind:style="{ width: showNotifications ? '80%' : '100%' }"
+      >
         <div class="apiInfo">
           <ApiInfo v-bind:info="apiInfo.info" />
           <div v-for="service in apiInfo.services" v-bind:key="service.path">
@@ -43,31 +43,30 @@
             />
           </div>
         </div>
+        <NotificationPanelButton
+          class="notifications-button"
+          v-bind:numberOfNotifications="
+            $root.$data.notificationsService.notifications.length
+          "
+          v-bind:checked="false"
+          v-on:click="showNotifications = !showNotifications"
+        />
       </div>
-      <div v-else>
-        <div v-if="apiInfoErrorMessage !== void 0">
-          <div class="error">
-            <p>{{ apiInfoErrorMessage }}</p>
-          </div>
+      <div
+        class="split right"
+        v-bind:style="{ width: showNotifications ? '20%' : '0%' }"
+      >
+        <NotificationPanel
+          v-bind:notifications="$root.$data.notificationsService.notifications"
+        />
+      </div>
+    </div>
+    <div v-else>
+      <div v-if="apiInfoErrorMessage !== void 0">
+        <div class="error">
+          <p>{{ apiInfoErrorMessage }}</p>
         </div>
       </div>
-      <NotificationPanelButton
-        class="notifications-button"
-        v-bind:numberOfNotifications="
-          $root.$data.notificationsService.notifications.length
-        "
-        v-bind:checked="false"
-        v-on:click="showNotifications = !showNotifications"
-      />
-    </div>
-
-    <div
-      class="split right"
-      v-bind:style="{ width: showNotifications ? '20%' : '0%' }"
-    >
-      <NotificationPanel
-        v-bind:notifications="$root.$data.notificationsService.notifications"
-      />
     </div>
   </div>
 </template>
