@@ -1,4 +1,4 @@
-import { Notification } from "./Notification.model.js";
+import { Notification } from "../models/Notification.model";
 
 export class NotificationsService {
   notifications = [];
@@ -6,7 +6,7 @@ export class NotificationsService {
   maxNotifications;
   cleanUpIntervalMs = 5000;
 
-  constructor(notificationTimeout = 20000, maxNotifications = 200) {
+  constructor(notificationTimeout = 60000, maxNotifications = 200) {
     this.notificationTimeoutMs = notificationTimeout;
     this.maxNotifications = maxNotifications;
 

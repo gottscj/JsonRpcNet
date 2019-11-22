@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { Notification } from "../services/Notification.model";
+import { Notification } from "../models/Notification.model";
 import NotificationDialog from "./NotificationDialog.vue";
 
 export default {

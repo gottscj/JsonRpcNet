@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { Notification } from "../services/Notification.model";
+import { Notification } from "../models/Notification.model";
 
 export default {
   name: "NotificationDialog",
