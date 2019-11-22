@@ -10,21 +10,28 @@
         {{ notification.timestampStr() }}
       </div>
     </div>
-    <NotificationDialog
-      v-if="showNotification"
-      v-on:close="toggleShowNotification"
-    />
+    <ModalDialog v-if="showNotification" v-on:close="toggleShowNotification">
+      <div class="notification-fullcard-title">
+        {{ notification.title }}
+        <div class="notification-timestamp">
+          {{ notification.timestampStr() }}
+        </div>
+      </div>
+      <div class="notification-fullcard-content">
+        <pre>{{ notification.content }}</pre>
+      </div>
+    </ModalDialog>
   </div>
 </template>
 
 <script>
 import { Notification } from "../models/Notification.model";
-import NotificationDialog from "./NotificationDialog.vue";
+import ModalDialog from "./ModalDialog.vue";
 
 export default {
   name: "NotificationCard",
   components: {
-    NotificationDialog
+    ModalDialog
   },
   props: {
     notification: Notification
@@ -86,6 +93,28 @@ export default {
     border-width: 1px;
     border-radius: 5px 5px 5px 5px;
     border-color: map-get($accent-color, 400);
+  }
+
+  .notification-fullcard-title {
+    @extend .notification-card;
+    font-size: 14px;
+    border-radius: 5px 5px 0px 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  .notification-fullcard-content {
+    @extend .notification-card;
+    border-radius: 0px 0px 5px 5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border-top: 0px;
+  }
+
+  .notification-fullcard-content pre {
+    margin: 0px;
+    font-size: 14px;
+    color: map-get($primary-color, 900);
   }
 
   .notification-timestamp {

@@ -2,20 +2,17 @@
   <transition name="modal">
     <div class="dialog-mask" @click="$emit('close')">
       <div class="dialog-wrapper">
-        <div class="dialog-container">TBD: A NOTIFICATION!</div>
+        <div class="dialog-container">
+          <slot></slot>
+        </div>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
-import { Notification } from "../models/Notification.model";
-
 export default {
-  name: "NotificationDialog",
-  props: {
-    notification: Notification
-  }
+  name: "ModalDialog"
 };
 </script>
 
@@ -29,7 +26,7 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: table;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .dialog-wrapper {
@@ -38,13 +35,10 @@ export default {
 }
 
 .dialog-container {
-  width: 300px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  transition: all 0.3s ease;
+  width: 50%;
+  margin: auto;
+  transition: all 0.2s ease;
 }
 
 .modal-header h3 {
