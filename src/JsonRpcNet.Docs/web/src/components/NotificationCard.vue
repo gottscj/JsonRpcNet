@@ -1,6 +1,10 @@
 <template>
   <div id="NotificationCard">
-    <div class="notification-card" v-on:click="toggleShowNotification">
+    <div
+      class="notification-card"
+      v-bind:style="{ opacity: notificationOpacity }"
+      v-on:click="toggleShowNotification"
+    >
       {{ notification.title }}
       <div class="notification-timestamp">
         {{ notification.timestampStr() }}
@@ -27,12 +31,39 @@ export default {
   },
   data: function() {
     return {
-      showNotification: false
+      showNotification: false,
+      notificationOpacity: 1,
+      opacityTimer: void 0
     };
+  },
+  watch: {
+    notification: function() {
+      this.notificationOpacity = this.calculateNotificationOpacity();
+    }
+  },
+  mounted() {
+    const self = this;
+    this.notificationOpacity = this.calculateNotificationOpacity();
+    this.opacityTimer = setInterval(() => {
+      self.notificationOpacity = self.calculateNotificationOpacity();
+    }, 2000);
+  },
+  beforeDestroy() {
+    clearInterval(this.opacityTimer);
   },
   methods: {
     toggleShowNotification() {
       this.showNotification = !this.showNotification;
+    },
+    calculateNotificationOpacity: function() {
+      return (
+        1 - 0.8 * (this.notification.getElapsed() / this.notificationTimeout)
+      );
+    }
+  },
+  computed: {
+    notificationTimeout: function() {
+      return this.$root.$data.notificationsService.notificationTimeoutMs;
     }
   }
 };

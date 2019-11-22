@@ -22,7 +22,10 @@ export class Notification {
   }
 
   isExpired(timeout) {
-    const elapsed = new Date() - this.timestamp; // in ms
-    return elapsed >= timeout;
+    return this.getElapsed() >= timeout;
+  }
+
+  getElapsed() {
+    return new Date() - this.timestamp; // in ms
   }
 }
