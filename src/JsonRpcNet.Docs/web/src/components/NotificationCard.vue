@@ -88,6 +88,8 @@ export default {
 
 <style lang="scss" scoped>
 #NotificationCard {
+  min-width: 300px;
+
   .notification-progress {
     margin-top: 4px;
     margin-bottom: 6px;

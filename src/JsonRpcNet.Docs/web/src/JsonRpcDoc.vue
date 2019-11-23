@@ -233,7 +233,6 @@ export default {
     height: 100%;
     position: fixed;
     z-index: 1;
-    overflow-x: hidden;
     overflow: scroll;
     padding-bottom: 45px;
   }
@@ -241,12 +240,14 @@ export default {
   .left {
     width: 80%;
     left: 0;
+    transition: width 0.2s;
   }
 
   .right {
     width: 20%;
     border-left: 1px solid map-get($primary-color, 200);
     right: 0;
+    transition: width 0.2s;
   }
 
   .apiInfo {
@@ -277,6 +278,7 @@ export default {
     top: 50px;
     left: 100%;
     margin-left: -65px;
+    transition: left 0.2s;
   }
 }
 </style>

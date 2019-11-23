@@ -204,6 +204,7 @@ export default {
 <style scoped lang="scss">
 #ApiService {
   color: map-get($primary-color, 400);
+  min-width: 600px;
 
   .accordion {
     font-family: inherit;
