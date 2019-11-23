@@ -45,6 +45,7 @@
         </div>
         <NotificationPanelButton
           class="notifications-button"
+          v-bind:style="{ left: showNotifications ? '80%' : '100%' }"
           v-bind:numberOfNotifications="
             $root.$data.notificationsService.notifications.length
           "
@@ -271,9 +272,11 @@ export default {
 
   .notifications-button {
     float: right;
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: fixed;
+    border-radius: 50%;
+    top: 50px;
+    left: 100%;
+    margin-left: -65px;
   }
 }
 </style>

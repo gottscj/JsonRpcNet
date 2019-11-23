@@ -85,7 +85,7 @@ export default {
     padding: 8px;
     width: 100%;
     margin-top: 4px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     text-align: left;
     outline: none;
     font-size: 12px;
@@ -97,6 +97,8 @@ export default {
 
   .notification-fullcard-title {
     @extend .notification-card;
+    cursor: default;
+    background-color: map-get($accent-color, 400);
     font-size: 14px;
     border-radius: 5px 5px 0px 0px;
     margin-top: 0px;
@@ -105,6 +107,7 @@ export default {
 
   .notification-fullcard-content {
     @extend .notification-card;
+    cursor: default;
     border-radius: 0px 0px 5px 5px;
     margin-top: 0px;
     margin-bottom: 0px;

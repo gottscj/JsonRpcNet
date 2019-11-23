@@ -56,6 +56,7 @@ export default {
 
   .action-button {
     margin: 10px 0px 0px 0px;
+    cursor: pointer;
 
     height: $height;
     width: $width;
