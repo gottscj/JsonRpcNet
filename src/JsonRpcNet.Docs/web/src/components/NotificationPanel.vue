@@ -3,7 +3,7 @@
     <div class="panel">
       <NotificationCard
         v-for="(note, index) in notifications"
-        v-bind:key="`note-${index}`"
+        v-bind:key="`note-${note.timestampStr()}-${index}`"
         v-bind:notification="note"
       />
     </div>

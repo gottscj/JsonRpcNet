@@ -1,13 +1,14 @@
 <template>
   <div id="NotificationCard">
-    <div
-      class="notification-card"
-      v-bind:style="{ opacity: notificationOpacity }"
-      v-on:click="toggleShowNotification"
-    >
-      {{ notification.title }}
-      <div class="notification-timestamp">
-        {{ notification.timestampStr() }}
+    <div class="notification-progress" v-bind:style="{ opacity: opacity }">
+      <div class="notification-card" v-on:click="toggleShowNotification">
+        {{ notification.title }}
+        <div class="notification-timestamp">
+          {{ notification.timestampStr() }}
+        </div>
+      </div>
+      <div class="progress">
+        <div class="progressbar" v-bind:style="{ width: `${progress}%` }" />
       </div>
     </div>
     <ModalDialog v-if="showNotification" v-on:close="toggleShowNotification">
@@ -39,32 +40,41 @@ export default {
   data: function() {
     return {
       showNotification: false,
-      notificationOpacity: 1,
-      opacityTimer: void 0
+      updateTimer: void 0,
+      opacity: 1,
+      progress: 100
     };
   },
   watch: {
     notification: function() {
-      this.notificationOpacity = this.calculateNotificationOpacity();
+      this.opacity = this.calculateOpacity();
+      this.progress = this.calculateProgress();
     }
   },
   mounted() {
     const self = this;
-    this.notificationOpacity = this.calculateNotificationOpacity();
-    this.opacityTimer = setInterval(() => {
-      self.notificationOpacity = self.calculateNotificationOpacity();
+    this.opacity = this.calculateOpacity();
+    this.progress = this.calculateProgress();
+    this.updateTimer = setInterval(() => {
+      self.opacity = self.calculateOpacity();
+      self.progress = self.calculateProgress();
     }, 2000);
   },
   beforeDestroy() {
-    clearInterval(this.opacityTimer);
+    clearInterval(this.updateTimer);
   },
   methods: {
     toggleShowNotification() {
       this.showNotification = !this.showNotification;
     },
-    calculateNotificationOpacity: function() {
+    calculateOpacity: function() {
       return (
         1 - 0.8 * (this.notification.getElapsed() / this.notificationTimeout)
+      );
+    },
+    calculateProgress: function() {
+      return (
+        100 - 100 * (this.notification.getElapsed() / this.notificationTimeout)
       );
     }
   },
@@ -78,14 +88,17 @@ export default {
 
 <style lang="scss" scoped>
 #NotificationCard {
+  .notification-progress {
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+
   .notification-card {
     background-color: map-get($accent-color, 30);
     color: inherit;
     cursor: pointer;
     padding: 8px;
     width: 100%;
-    margin-top: 4px;
-    margin-bottom: 6px;
     text-align: left;
     outline: none;
     font-size: 12px;
@@ -128,6 +141,18 @@ export default {
     padding-left: 4px;
     padding-right: 4px;
     border-radius: 3px 3px 3px 3px;
+  }
+
+  .progress {
+    margin: -1px 3px 0px 3px;
+    height: 1px;
+    background-color: map-get($accent-color, 30);
+  }
+
+  .progressbar {
+    width: 100%;
+    background-color: map-get($accent-color, 400);
+    transition: width 0.5s;
   }
 }
 </style>
