@@ -125,6 +125,8 @@ export default {
     margin-top: 0px;
     margin-bottom: 0px;
     border-top: 0px;
+    max-height: 500px;
+    overflow: auto;
   }
 
   .notification-fullcard-content pre {
