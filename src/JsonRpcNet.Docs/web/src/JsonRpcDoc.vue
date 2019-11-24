@@ -1,6 +1,6 @@
 <template>
   <div id="JsonRpcDocs">
-    <BNavbar sticky="true" class="navBar">
+    <BNavbar class="navBar">
       <BNavbarBrand class="navBarTitle">JsonRpcNet</BNavbarBrand>
 
       <!-- search box is disabled, because the functionality isn't implemented yet -->
