@@ -108,6 +108,7 @@ export default {
     border-width: 1px;
     border-radius: 5px 5px 5px 5px;
     border-color: map-get($accent-color, 400);
+    transition: opacity 2s;
   }
 
   .notification-fullcard-title {
@@ -156,7 +157,7 @@ export default {
   .progressbar {
     width: 100%;
     background-color: map-get($accent-color, 400);
-    transition: width 0.5s;
+    transition: width 5s;
   }
 }
 </style>

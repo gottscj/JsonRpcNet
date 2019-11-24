@@ -1,6 +1,6 @@
 <template>
   <div id="JsonRpcDocs">
-    <BNavbar class="navBar">
+    <BNavbar sticky="true" class="navBar">
       <BNavbarBrand class="navBarTitle">JsonRpcNet</BNavbarBrand>
 
       <!-- search box is disabled, because the functionality isn't implemented yet -->
@@ -230,11 +230,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 
   .split {
-    height: 100%;
-    position: fixed;
+    position: absolute;
+    top: 45px;
+    bottom: 0;
     z-index: 1;
-    overflow: scroll;
-    padding-bottom: 45px;
+    overflow: auto;
   }
 
   .left {
