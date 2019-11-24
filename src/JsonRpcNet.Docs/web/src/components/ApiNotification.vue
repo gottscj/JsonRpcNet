@@ -1,26 +1,35 @@
 <template>
   <div id="ApiNotification">
-    <button
+    <div
       v-bind:class="{
         'accordion-expanded': expanded,
         'accordion-collapsed': !expanded
       }"
-      @click="toggleAccordion"
     >
-      <div
+      <button
         v-bind:class="{
-          'notification-name-expanded': expanded,
-          'notification-name-collapsed': !expanded
+          'accordion-top-expanded': expanded,
+          'accordion-top-collapsed': !expanded
         }"
+        @click="toggleAccordion"
       >
-        {{ notification.name }}
+        <div
+          v-bind:class="{
+            'notification-name-expanded': expanded,
+            'notification-name-collapsed': !expanded
+          }"
+        >
+          {{ notification.name }}
+        </div>
+        <div class="notification-description">
+          {{ notification.description }}
+        </div>
+        <BFormCheckbox class="notification-enable" switch v-model="listening" />
+      </button>
+      <div v-if="expanded" class="accordion-panel">
+        <div class="notification-subtitle">Parameters definition</div>
+        <div class="notification-definition">{{ notification.params }}</div>
       </div>
-      <div class="notification-description">{{ notification.description }}</div>
-      <BFormCheckbox class="notification-enable" switch v-model="listening" />
-    </button>
-    <div v-if="expanded" class="panel">
-      <div class="notification-subtitle">Parameters definition</div>
-      <div class="notification-definition">{{ notification.params }}</div>
     </div>
   </div>
 </template>
@@ -94,7 +103,17 @@ export default {
 #ApiNotification {
   color: map-get($primary-color, 400);
 
-  .accordion {
+  .accordion-collapsed {
+    transition: all 0.2s linear;
+  }
+
+  .accordion-expanded {
+    margin-left: -8px;
+    margin-right: 8px;
+    transition: all 0.2s linear;
+  }
+
+  .accordion-top {
     font-family: inherit;
     background-color: map-get($accent-color, 30);
     color: inherit;
@@ -109,24 +128,23 @@ export default {
     border-width: 1px;
   }
 
-  .accordion-expanded {
-    @extend .accordion;
-    margin-left: -8px;
+  .accordion-top-expanded {
+    @extend .accordion-top;
     border-radius: 5px 5px 0px 0px;
     border-color: map-get($accent-color, 400);
     box-shadow: 3px 3px 3px 0 map-get($accent-color, 100),
       3px 3px 3px 0 map-get($accent-color, 100);
   }
 
-  .accordion-collapsed {
-    @extend .accordion;
+  .accordion-top-collapsed {
+    @extend .accordion-top;
     border-radius: 5px;
     border-color: map-get($accent-color, 300);
     box-shadow: 2px 2px 2px 0 map-get($accent-color, 50),
       2px 2px 2px 0 map-get($accent-color, 50);
   }
 
-  .panel {
+  .accordion-panel {
     font-family: inherit;
     display: block;
     background-color: map-get($accent-color, 30);
@@ -136,8 +154,6 @@ export default {
     border-color: map-get($accent-color, 400);
     border-width: 1px;
     border-top: none;
-    margin-left: -8px;
-    margin-right: 8px;
     box-shadow: 3px 3px 3px 0 map-get($accent-color, 100),
       3px 3px 3px 0 map-get($accent-color, 100);
   }

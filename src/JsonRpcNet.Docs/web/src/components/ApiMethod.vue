@@ -1,51 +1,58 @@
 <template>
   <div id="ApiMethod">
-    <button
+    <div
       v-bind:class="{
         'accordion-expanded': expanded,
         'accordion-collapsed': !expanded
       }"
-      @click="toggleAccordion"
     >
-      <div
+      <button
         v-bind:class="{
-          'method-name-expanded': expanded,
-          'method-name-collapsed': !expanded
+          'accordion-top-expanded': expanded,
+          'accordion-top-collapsed': !expanded
         }"
+        @click="toggleAccordion"
       >
-        {{ method.name }}
-      </div>
-      <div class="method-description">{{ method.description }}</div>
-    </button>
-    <div v-if="expanded" class="panel">
-      <div class="method-subtitle">Parameters</div>
-      <div class="method-parameters">
-        <ApiMethodParameters
-          v-bind:parameters="method.params"
-          v-on:parametersChanged="onParametersChanged"
-        />
-        <ActionButtonWithStatus
-          text="Try me!"
-          hoverText="Go!"
-          v-bind:status="callStatus"
-          v-bind:statusText="callStatusText"
-          @click="callMethod"
-        />
-      </div>
-      <!--TODO: create json text area component shared among parameters and response -->
-      <div class="method-subtitle">Response</div>
-      <div class="websocket-response">
-        <textarea
-          readonly
-          v-bind:class="
-            !websocketResponseError
-              ? 'websocket-response-ok'
-              : 'websocket-response-error'
-          "
-          v-model="websocketResponse"
-          placeholder="JSON response will show here"
-          v-bind:rows="websocketResponseRows"
-        />
+        <div
+          v-bind:class="{
+            'method-name-expanded': expanded,
+            'method-name-collapsed': !expanded
+          }"
+        >
+          {{ method.name }}
+        </div>
+        <div class="method-description">{{ method.description }}</div>
+      </button>
+      <div v-show="expanded" class="accordion-panel">
+        <div class="method-subtitle">Parameters</div>
+        <div class="method-parameters">
+          <ApiMethodParameters
+            v-bind:parameters="method.params"
+            v-on:parametersChanged="onParametersChanged"
+          />
+          <ActionButtonWithStatus
+            text="Try me!"
+            hoverText="Go!"
+            v-bind:status="callStatus"
+            v-bind:statusText="callStatusText"
+            @click="callMethod"
+          />
+        </div>
+        <!--TODO: create json text area component shared among parameters and response -->
+        <div class="method-subtitle">Response</div>
+        <div class="websocket-response">
+          <textarea
+            readonly
+            v-bind:class="
+              !websocketResponseError
+                ? 'websocket-response-ok'
+                : 'websocket-response-error'
+            "
+            v-model="websocketResponse"
+            placeholder="JSON response will show here"
+            v-bind:rows="websocketResponseRows"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -155,7 +162,17 @@ export default {
 #ApiMethod {
   color: map-get($primary-color, 400);
 
-  .accordion {
+  .accordion-collapsed {
+    transition: all 0.2s linear;
+  }
+
+  .accordion-expanded {
+    margin-left: -8px;
+    margin-right: 8px;
+    transition: all 0.2s linear;
+  }
+
+  .accordion-top {
     font-family: inherit;
     background-color: map-get($secondary-color, 30);
     color: inherit;
@@ -170,24 +187,23 @@ export default {
     border-width: 1px;
   }
 
-  .accordion-expanded {
-    @extend .accordion;
-    margin-left: -8px;
+  .accordion-top-expanded {
+    @extend .accordion-top;
     border-radius: 5px 5px 0px 0px;
     border-color: map-get($secondary-color, 400);
     box-shadow: 3px 3px 3px 0 map-get($secondary-color, 100),
       3px 3px 3px 0 map-get($secondary-color, 100);
   }
 
-  .accordion-collapsed {
-    @extend .accordion;
+  .accordion-top-collapsed {
+    @extend .accordion-top;
     border-radius: 5px;
     border-color: map-get($secondary-color, A200);
     box-shadow: 2px 2px 2px 0 map-get($secondary-color, 50),
       2px 2px 2px 0 map-get($secondary-color, 50);
   }
 
-  .panel {
+  .accordion-panel {
     font-family: inherit;
     display: block;
     background-color: map-get($secondary-color, 30);
@@ -196,8 +212,6 @@ export default {
     border-style: solid;
     border-color: map-get($secondary-color, 400);
     border-width: 1px;
-    margin-left: -8px;
-    margin-right: 8px;
     border-top: none;
     box-shadow: 3px 3px 3px 0 map-get($secondary-color, 100),
       3px 3px 3px 0 map-get($secondary-color, 100);
