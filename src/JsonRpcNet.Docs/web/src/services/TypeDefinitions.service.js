@@ -1,6 +1,7 @@
 export class TypeDefinitionsService {
   pathRef = "#/";
   typeRef = "$ref";
+  inheritanceProp = "allOf";
 
   constructor(apiInfo) {
     this.apiInfo = apiInfo;
@@ -8,6 +9,10 @@ export class TypeDefinitionsService {
 
   isReferenceType(type) {
     return typeof type === "object" && this.typeRef in type;
+  }
+
+  isInheritance(type) {
+    return this.inheritanceProp in type;
   }
 
   getTypeReferenceDefinition(type, rootDefinition = null) {
@@ -37,6 +42,17 @@ export class TypeDefinitionsService {
         );
       }
     });
+
+    if (this.isInheritance(typeDefinition)) {
+      const inheritedProps = this.getTypeReferenceDefinition(
+        typeDefinition.allOf[0]
+      ).properties;
+      typeDefinition = typeDefinition.allOf[1];
+      typeDefinition.properties = {
+        ...typeDefinition.properties,
+        ...inheritedProps
+      };
+    }
 
     return typeDefinition;
   }
@@ -75,6 +91,9 @@ export class TypeDefinitionsService {
         }
         return "string";
       }
+      case "array": {
+        return [this.createDefaultObject(paramTypeDef.items)];
+      }
       case "boolean": {
         return false;
       }
@@ -92,12 +111,12 @@ export class TypeDefinitionsService {
 }
 
 /* eslint-disable */
-Date.prototype.toIsoString = function() {
+Date.prototype.toIsoString = function () {
   var tzo = -this.getTimezoneOffset(),
     dif = tzo >= 0 ? "+" : "-",
-    pad = function(num) {
-        var norm = Math.floor(Math.abs(num));
-        return (norm < 10 ? "0" : "") + norm;
+    pad = function (num) {
+      var norm = Math.floor(Math.abs(num));
+      return (norm < 10 ? "0" : "") + norm;
     };
   return this.getFullYear() +
     "-" + pad(this.getMonth() + 1) +
