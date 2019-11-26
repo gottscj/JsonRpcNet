@@ -20,10 +20,33 @@
             v-model="selectedServer"
             v-bind:options="selectServerOptions"
             v-on:change="selectServer"
-          ></BFormSelect>
+          >
+            <optgroup label="local">
+              <option value="example"
+                >TBD: added server (http://example.com:8080)</option
+              >
+            </optgroup>
+          </BFormSelect>
+          <BInputGroupAppend>
+            <BButton v-on:click="showAddServerDialog = !showAddServerDialog"
+              >+</BButton
+            >
+            <BButton
+              v-if="
+                selectedServerInfo !== void 0 &&
+                  selectedServerInfo.origin === 'local'
+              "
+              >-</BButton
+            >
+          </BInputGroupAppend>
         </BInputGroup>
       </BNavbarNav>
     </BNavbar>
+
+    <AddServerFormDialog
+      v-bind:show="showAddServerDialog"
+      v-on:close="showAddServerDialog = false"
+    />
 
     <div v-if="configErrorMessage !== void 0" class="error">
       {{ this.configErrorMessage }}
@@ -76,8 +99,10 @@
 import ApiInfo from "./components/ApiInfo.vue";
 import ApiService from "./components/ApiService.vue";
 import {
+  BButton,
   BFormSelect,
   BInputGroup,
+  BInputGroupAppend,
   BNavbar,
   BNavbarNav,
   BNavbarBrand
@@ -86,14 +111,18 @@ import NotificationPanel from "./components/NotificationPanel.vue";
 import NotificationPanelButton from "./components/NotificationPanelButton.vue";
 import SearchBox from "./components/SearchBox.vue";
 import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
+import AddServerFormDialog from "./components/AddServerFormDialog";
 
 export default {
   name: "JsonRpcDocs",
   components: {
+    AddServerFormDialog,
     ApiInfo,
     ApiService,
+    BButton,
     BFormSelect,
     BInputGroup,
+    BInputGroupAppend,
     BNavbar,
     BNavbarBrand,
     BNavbarNav,
@@ -116,11 +145,19 @@ export default {
           name: String,
           url: String,
           ws: String,
-          docs: String
+          docs: String,
+          origin: {
+            type: "config" | "local",
+            default: "config",
+            validator: function(value) {
+              return ["config", "local"].indexOf(value) !== -1;
+            }
+          }
         }
       ],
       searchString: "",
-      showNotifications: false
+      showNotifications: false,
+      showAddServerDialog: false
     };
   },
   methods: {
