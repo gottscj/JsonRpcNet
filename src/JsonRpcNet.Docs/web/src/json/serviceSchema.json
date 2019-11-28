@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "/serviceApi",
+  "type": "object",
+  "required": ["info", "services"],
+  "properties": {
+    "info" : {
+      "$ref": "#/definitions/info"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/service"
+      }
+    }
+  },
+  "definitions": {
+    "info": {
+      "type": "object",
+      "required": ["description", "version", "title", "contact"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "required": ["name", "email", "url"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "required": ["name", "path", "description", "methods"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/method"
+          }
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/notification"
+          }
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "required": ["name", "response", "description", "params"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "response": {
+          "type": "object",
+          "required": ["schema"],
+          "properties": {
+            "schema": {
+              "$ref": "#/definitions/schema"
+            }
+          }
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/parameter"
+          }
+        }
+      }
+    },
+    "schema": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["number", "string", "integer", "object", "array", "boolean", "void"]
+            }
+          } 
+        },
+        {
+          "type": "object",
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "parameter": {
+      "type": "object",
+      "required": ["name", "schema"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "schema": {
+          "$ref": "#/definitions/schema"
+        }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/schema"
+        }
+      }
+    }
+  }
+}

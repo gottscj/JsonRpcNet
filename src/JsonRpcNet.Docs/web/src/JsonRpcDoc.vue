@@ -112,6 +112,7 @@ import NotificationPanelButton from "./components/NotificationPanelButton.vue";
 import SearchBox from "./components/SearchBox.vue";
 import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
 import AddServerFormDialog from "./components/AddServerFormDialog";
+import { Validator } from "jsonschema";
 
 export default {
   name: "JsonRpcDocs",
@@ -161,25 +162,27 @@ export default {
     };
   },
   methods: {
-    getJson(url, callback, errorCallback = null) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", url, true);
-
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          callback(xhr.responseText);
-        }
-      };
-
-      xhr.onerror = function() {
-        if (errorCallback) {
-          errorCallback(xhr.responseText);
-        }
-      };
-
-      xhr.send();
+    getJson(url) {
+      return new Promise(function(resolve, reject) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const json = JSON.parse(xhr.response);
+              resolve(json);
+            } catch (e) {
+              reject(e.message);
+            }
+          } else {
+            reject(xhr.statusText);
+          }
+        };
+        xhr.onerror = () => reject(xhr.statusText);
+        xhr.send();
+      });
     },
-    selectServer() {
+    selectServer: async function() {
       const selectedServerInfo = this.servers.filter(
         x => x.name === this.selectedServer
       )[0];
@@ -189,20 +192,28 @@ export default {
       this.apiInfo = void 0;
       this.apiInfoErrorMessage = void 0;
       const docUrl = `${selectedServerInfo.url}/${selectedServerInfo.docs}`;
-      this.getJson(
-        docUrl,
-        text => {
-          this.apiInfo = JSON.parse(text);
-          this.$root.$data.typeDefinitionsService = new TypeDefinitionsService(
-            this.apiInfo
-          );
-        },
-        errorText => {
+      try {
+        const apiDoc = await this.getJson(docUrl);
+        const serviceSchema = await this.getJson("serviceSchema.json");
+        let v = new Validator();
+        let validationResult = v.validate(apiDoc, serviceSchema);
+        if (validationResult.errors.length > 0) {
+          // eslint-disable-next-line no-console
           this.apiInfoErrorMessage =
             `:~( could not retrieve api documentation from ${docUrl}. ` +
-            errorText;
+            validationResult.toString();
+          return;
         }
-      );
+
+        this.apiInfo = apiDoc;
+        this.$root.$data.typeDefinitionsService = new TypeDefinitionsService(
+          this.apiInfo
+        );
+      } catch (e) {
+        this.apiInfoErrorMessage =
+          `:~( could not retrieve api documentation from ${docUrl}. ` +
+          e.message;
+      }
     },
     toggleNotificationPanel() {
       this.showNotifications = !this.showNotifications;
@@ -235,27 +246,18 @@ export default {
       return selectedServerInfo[0];
     }
   },
-  mounted() {
+  async mounted() {
     this.apiInfo = void 0;
     const configFile = "./config.json";
     const errorMessage = `Failed to load configuration file from ${configFile}.`;
-    this.getJson(
-      configFile,
-      text => {
-        try {
-          const config = JSON.parse(text);
-          this.servers = config.servers;
-          this.selectedServer = this.selectServerOptions[0].value;
-          this.selectServer();
-        } catch (error) {
-          this.configErrorMessage = errorMessage + " " + error.message;
-          return;
-        }
-      },
-      errorText => {
-        this.configErrorMessage = errorMessage + " " + errorText;
-      }
-    );
+    try {
+      const config = await this.getJson(configFile);
+      this.servers = config.servers;
+      this.selectedServer = this.selectServerOptions[0].value;
+      this.selectServer();
+    } catch (e) {
+      this.configErrorMessage = errorMessage + " " + e.message;
+    }
   }
 };
 </script>

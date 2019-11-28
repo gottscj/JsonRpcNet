@@ -205,6 +205,7 @@ export default {
 #ApiService {
   color: map-get($primary-color, 400);
   min-width: 600px;
+  margin-bottom: 10px;
 
   .accordion {
     font-family: inherit;
