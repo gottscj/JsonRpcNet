@@ -14,19 +14,12 @@
       <BNavbarNav class="ml-auto">
         <BInputGroup prepend="Server" size="sm">
           <BFormSelect
-            v-if="selectServerOptions.length > 1"
             right
             size="sm"
             v-model="selectedServer"
             v-bind:options="selectServerOptions"
             v-on:change="selectServer"
-          >
-            <optgroup label="local">
-              <option value="example"
-                >TBD: added server (http://example.com:8080)</option
-              >
-            </optgroup>
-          </BFormSelect>
+          />
           <BInputGroupAppend>
             <BButton v-on:click="showAddServerDialog = !showAddServerDialog"
               >+</BButton
@@ -36,6 +29,7 @@
                 selectedServerInfo !== void 0 &&
                   selectedServerInfo.origin === 'local'
               "
+              v-on:click="removeSelectedServer"
               >-</BButton
             >
           </BInputGroupAppend>
@@ -46,6 +40,7 @@
     <AddServerFormDialog
       v-bind:show="showAddServerDialog"
       v-on:close="showAddServerDialog = false"
+      v-on:addServer="addServer($event)"
     />
 
     <div v-if="configErrorMessage !== void 0" class="error">
@@ -149,7 +144,6 @@ export default {
           docs: String,
           origin: {
             type: "config" | "local",
-            default: "config",
             validator: function(value) {
               return ["config", "local"].indexOf(value) !== -1;
             }
@@ -201,11 +195,7 @@ export default {
           serviceSchema
         );
         if (validationResult.errors.length > 0) {
-          // eslint-disable-next-line no-console
-          this.apiInfoErrorMessage =
-            `:~( could not retrieve api documentation from ${docUrl}. ` +
-            validationResult.toString();
-          return;
+          throw new Error(validationResult.toString());
         }
 
         this.apiInfo = apiDoc;
@@ -213,13 +203,38 @@ export default {
           this.apiInfo
         );
       } catch (e) {
-        this.apiInfoErrorMessage =
-          `:~( could not retrieve api documentation from ${docUrl}. ` +
-          e.message;
+        this.apiInfoErrorMessage = `:~( could not retrieve api documentation from ${docUrl}. ${
+          e.message != void 0 ? e.message : ""
+        }`;
       }
     },
     toggleNotificationPanel() {
       this.showNotifications = !this.showNotifications;
+    },
+    addServer(server) {
+      server.origin = "local";
+      this.servers.push(server);
+      this.selectServerByName(server.name);
+    },
+    removeSelectedServer() {
+      let serverToRemove = this.selectedServer;
+      for (let i = 0; i < this.servers.length; ++i) {
+        if (this.servers[i].name === serverToRemove) {
+          if (this.servers.length > 1) {
+            if (i === 0) {
+              this.selectedServer = this.servers[1].name;
+            }
+            this.selectedServer = this.servers[i - 1].name;
+            this.selectServer();
+            this.servers.splice(i, 1);
+            break;
+          }
+        }
+      }
+    },
+    selectServerByName(serverName) {
+      this.selectedServer = serverName;
+      this.selectServer();
     }
   },
   computed: {
@@ -229,7 +244,10 @@ export default {
       }
 
       return this.servers.map(s => {
-        return { value: s.name, text: `${s.name} (${s.url})` };
+        return {
+          value: s.name,
+          text: `${s.name} (${s.url})${s.origin === "local" ? " *" : ""}`
+        };
       });
     },
     selectedServerInfo: function() {
@@ -255,7 +273,9 @@ export default {
     const errorMessage = `Failed to load configuration file from ${configFile}.`;
     try {
       const config = await this.getJson(configFile);
-      this.servers = config.servers;
+      this.servers = config.servers.map(s => {
+        return { ...s, origin: "config" };
+      });
       this.selectedServer = this.selectServerOptions[0].value;
       this.selectServer();
     } catch (e) {
