@@ -30,6 +30,7 @@
                   selectedServerInfo.origin === 'local'
               "
               v-on:click="removeSelectedServer"
+              variant="danger"
               >-</BButton
             >
           </BInputGroupAppend>
@@ -59,7 +60,7 @@
             v-bind:key="service.path"
           >
             <ApiService
-              v-bind:color="serviceColors[index]"
+              v-bind:color="serviceColors[index % serviceColors.length]"
               v-bind:serverInfo="selectedServerInfo"
               v-bind:service="service"
             />

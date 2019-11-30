@@ -207,7 +207,7 @@ export default {
 #ApiService {
   color: map-get($primary-color, 400);
   min-width: 600px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 
   .accordion {
     padding: 0px;
@@ -225,6 +225,7 @@ export default {
     transition: 0.4s;
     display: flex;
     border-bottom: 1px solid map-get($primary-color, 100);
+    border-radius: 7px 0px 0px 7px;
   }
 
   .panel {
@@ -235,7 +236,8 @@ export default {
 
   .service-color {
     height: 59px;
-    width: 8px;
+    width: 10px;
+    border-radius: 7px 0px 0px 7px;
   }
 
   .service-connection {
@@ -246,7 +248,7 @@ export default {
 
   .service-online {
     text-align: center;
-    margin: 10px 0px 0px 20px;
+    margin: 20px 0px 0px 20px;
     background-color: map-get($accent-color, 500);
   }
 
