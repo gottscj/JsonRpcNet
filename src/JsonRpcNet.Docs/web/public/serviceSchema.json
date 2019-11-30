@@ -2,9 +2,12 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "$id": "/serviceApi",
   "type": "object",
-  "required": ["info", "services"],
+  "required": [
+    "info",
+    "services"
+  ],
   "properties": {
-    "info" : {
+    "info": {
       "$ref": "#/definitions/info"
     },
     "services": {
@@ -17,7 +20,12 @@
   "definitions": {
     "info": {
       "type": "object",
-      "required": ["description", "version", "title", "contact"],
+      "required": [
+        "description",
+        "version",
+        "title",
+        "contact"
+      ],
       "properties": {
         "description": {
           "type": "string"
@@ -35,7 +43,11 @@
     },
     "contact": {
       "type": "object",
-      "required": ["name", "email", "url"],
+      "required": [
+        "name",
+        "email",
+        "url"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -50,7 +62,12 @@
     },
     "service": {
       "type": "object",
-      "required": ["name", "path", "description", "methods"],
+      "required": [
+        "name",
+        "path",
+        "description",
+        "methods"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -77,7 +94,12 @@
     },
     "method": {
       "type": "object",
-      "required": ["name", "response", "description", "params"],
+      "required": [
+        "name",
+        "response",
+        "description",
+        "params"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -87,7 +109,9 @@
         },
         "response": {
           "type": "object",
-          "required": ["schema"],
+          "required": [
+            "schema"
+          ],
           "properties": {
             "schema": {
               "$ref": "#/definitions/schema"
@@ -106,17 +130,29 @@
       "anyOf": [
         {
           "type": "object",
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["number", "string", "integer", "object", "array", "boolean", "void"]
+              "enum": [
+                "number",
+                "string",
+                "integer",
+                "object",
+                "array",
+                "boolean",
+                "void"
+              ]
             }
-          } 
+          }
         },
         {
           "type": "object",
-          "required": ["$ref"],
+          "required": [
+            "$ref"
+          ],
           "properties": {
             "$ref": {
               "type": "string"
@@ -127,7 +163,10 @@
     },
     "parameter": {
       "type": "object",
-      "required": ["name", "schema"],
+      "required": [
+        "name",
+        "schema"
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -147,7 +186,10 @@
           "type": "string"
         },
         "params": {
-          "$ref": "#/definitions/schema"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/parameter"
+          }
         }
       }
     }

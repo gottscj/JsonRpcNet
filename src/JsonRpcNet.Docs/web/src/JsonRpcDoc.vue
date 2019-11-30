@@ -194,9 +194,12 @@ export default {
       const docUrl = `${selectedServerInfo.url}/${selectedServerInfo.docs}`;
       try {
         const apiDoc = await this.getJson(docUrl);
-        const serviceSchema = await this.getJson("serviceSchema.json");
-        let v = new Validator();
-        let validationResult = v.validate(apiDoc, serviceSchema);
+        const serviceSchema = await this.getJson("./serviceSchema.json");
+        let jsonSchemaValidator = new Validator();
+        let validationResult = jsonSchemaValidator.validate(
+          apiDoc,
+          serviceSchema
+        );
         if (validationResult.errors.length > 0) {
           // eslint-disable-next-line no-console
           this.apiInfoErrorMessage =
