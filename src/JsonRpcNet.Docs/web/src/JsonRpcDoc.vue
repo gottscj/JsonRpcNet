@@ -182,6 +182,7 @@ export default {
       )[0];
 
       this.$root.$data.notificationsService.clearAll();
+      localStorage.selectedServer = selectedServerInfo.name;
 
       this.apiInfo = void 0;
       this.apiInfoErrorMessage = void 0;
@@ -214,6 +215,7 @@ export default {
     addServer(server) {
       server.origin = "local";
       this.servers.push(server);
+      this.saveLocalServers();
       this.selectServerByName(server.name);
     },
     removeSelectedServer() {
@@ -227,6 +229,7 @@ export default {
             this.selectedServer = this.servers[i - 1].name;
             this.selectServer();
             this.servers.splice(i, 1);
+            this.saveLocalServers();
             break;
           }
         }
@@ -235,6 +238,26 @@ export default {
     selectServerByName(serverName) {
       this.selectedServer = serverName;
       this.selectServer();
+    },
+    getLocalServers() {
+      if (localStorage.getItem("localServers")) {
+        try {
+          return JSON.parse(localStorage.getItem("localServers"));
+        } catch (e) {
+          localStorage.removeItem("localServers");
+        }
+      }
+    },
+    saveLocalServers() {
+      const localServers = this.servers.filter(s => s.origin === "local");
+      if (localServers.length > 0) {
+        const localServersStr = JSON.stringify(
+          this.servers.filter(s => s.origin === "local")
+        );
+        localStorage.setItem("localServers", localServersStr);
+      } else {
+        localStorage.removeItem("localServers");
+      }
     }
   },
   computed: {
@@ -276,7 +299,17 @@ export default {
       this.servers = config.servers.map(s => {
         return { ...s, origin: "config" };
       });
-      this.selectedServer = this.selectServerOptions[0].value;
+
+      const localServers = this.getLocalServers();
+      if (localServers !== void 0) {
+        this.servers.push(...localServers);
+      }
+
+      const lastSelectedServer = localStorage.selectedServer;
+      this.selectedServer =
+        lastSelectedServer === void 0
+          ? this.selectServerOptions[0].value
+          : lastSelectedServer;
       this.selectServer();
     } catch (e) {
       this.configErrorMessage = errorMessage + " " + e.message;
