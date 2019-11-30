@@ -48,7 +48,7 @@
           v-model="$v.form.docs.$model"
           v-bind:state="$v.form.docs.$dirty ? !$v.form.docs.$error : null"
           aria-describedby="input-1-live-feedback"
-          placeholder="/jsonrpc/jsonRpcApi.json"
+          placeholder="jsonrpc/jsonRpcApi.json"
         ></BFormInput>
       </BFormGroup>
 
@@ -142,6 +142,13 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
+
+      this.$emit("addServer", {
+        name: this.form.name,
+        url: this.form.url,
+        ws: this.form.ws,
+        docs: this.form.docs
+      });
 
       // Hide the modal manually
       this.$nextTick(() => {
