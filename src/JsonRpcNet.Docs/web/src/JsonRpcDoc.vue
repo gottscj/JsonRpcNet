@@ -177,16 +177,18 @@ export default {
       });
     },
     selectServer: async function() {
-      const selectedServerInfo = this.servers.filter(
-        x => x.name === this.selectedServer
-      )[0];
-
-      this.$root.$data.notificationsService.clearAll();
-      localStorage.selectedServer = selectedServerInfo.name;
-
       this.apiInfo = void 0;
       this.apiInfoErrorMessage = void 0;
-      const docUrl = `${selectedServerInfo.url}/${selectedServerInfo.docs}`;
+      this.$root.$data.notificationsService.clearAll();
+
+      if (this.selectedServerInfo !== void 0) {
+        localStorage.selectedServer = this.selectedServerInfo.name;
+      } else {
+        localStorage.removeItem("selectedServer");
+        return;
+      }
+
+      const docUrl = `${this.selectedServerInfo.url}/${this.selectedServerInfo.docs}`;
       try {
         const apiDoc = await this.getJson(docUrl);
         const serviceSchema = await this.getJson("./serviceSchema.json");
@@ -227,11 +229,13 @@ export default {
               this.selectedServer = this.servers[1].name;
             }
             this.selectedServer = this.servers[i - 1].name;
-            this.selectServer();
-            this.servers.splice(i, 1);
-            this.saveLocalServers();
-            break;
+          } else {
+            this.selectedServer = void 0;
           }
+          this.selectServer();
+          this.servers.splice(i, 1);
+          this.saveLocalServers();
+          break;
         }
       }
     },
@@ -283,7 +287,7 @@ export default {
       );
       if (selectedServerInfo.length != 1) {
         throw new Error(
-          `More than 1 server with name ${this.selectedServer} were found. The server name must be unique.`
+          `None or more than 1 server with name ${this.selectedServer} were found. The server name must be unique.`
         );
       }
 
@@ -306,11 +310,13 @@ export default {
       }
 
       const lastSelectedServer = localStorage.selectedServer;
-      this.selectedServer =
-        lastSelectedServer === void 0
-          ? this.selectServerOptions[0].value
-          : lastSelectedServer;
-      this.selectServer();
+      if (this.servers.length > 0) {
+        this.selectedServer =
+          lastSelectedServer === void 0
+            ? this.selectServerOptions[0].value
+            : lastSelectedServer;
+        this.selectServer();
+      }
     } catch (e) {
       this.configErrorMessage = errorMessage + " " + e.message;
     }
