@@ -54,8 +54,12 @@
       >
         <div class="apiInfo">
           <ApiInfo v-bind:info="apiInfo.info" />
-          <div v-for="service in apiInfo.services" v-bind:key="service.path">
+          <div
+            v-for="(service, index) in apiInfo.services"
+            v-bind:key="service.path"
+          >
             <ApiService
+              v-bind:color="serviceColors[index]"
               v-bind:serverInfo="selectedServerInfo"
               v-bind:service="service"
             />
@@ -152,7 +156,20 @@ export default {
       ],
       searchString: "",
       showNotifications: false,
-      showAddServerDialog: false
+      showAddServerDialog: false,
+      serviceColors: [
+        "#ADEFD1FF",
+        "#86899C",
+        "#D6ED17FF",
+        "#ED2B33FF",
+        "#A4CCFF",
+        "#D85A7FFF",
+        "#F95700FF",
+        "#2C5F2D",
+        "#00539CFF",
+        "#97BC62FF",
+        "#EEA47FFF"
+      ]
     };
   },
   methods: {

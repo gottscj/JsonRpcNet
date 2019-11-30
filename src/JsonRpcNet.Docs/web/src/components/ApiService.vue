@@ -1,6 +1,7 @@
 <template>
   <div id="ApiService">
     <button class="accordion" @click="toggleAccordion">
+      <dic class="service-color" v-bind:style="{ background: color }" />
       <div class="service-path">{{ service.path }}</div>
       <div class="service-name">{{ service.name }}</div>
       <div class="service-description">{{ service.description }}</div>
@@ -118,6 +119,7 @@ export default {
     }
   },
   props: {
+    color: String,
     serverInfo: void 0,
     service: {
       name: String,
@@ -208,11 +210,12 @@ export default {
   margin-bottom: 10px;
 
   .accordion {
+    padding: 0px;
     font-family: inherit;
     background-color: map-get($primary-color, 30);
     color: inherit;
     cursor: pointer;
-    padding: 10px;
+    height: 60px;
     width: 100%;
     border: none;
     text-align: left;
@@ -230,8 +233,13 @@ export default {
     overflow: hidden;
   }
 
+  .service-color {
+    height: 59px;
+    width: 8px;
+  }
+
   .service-connection {
-    padding: 5px;
+    padding: 15px 5px 0px 0px;
     margin-right: 0px;
     margin-left: auto;
   }
@@ -244,7 +252,7 @@ export default {
 
   .service-name {
     height: 40px;
-    line-height: 40px;
+    line-height: 60px;
     text-align: center;
     color: inherit;
     padding: 0px 20px 0px 20px;
@@ -253,7 +261,7 @@ export default {
 
   .service-description {
     height: 40px;
-    line-height: 40px;
+    line-height: 60px;
     text-align: center;
     color: inherit;
     font-size: 15px;
@@ -263,6 +271,8 @@ export default {
     color: map-get($primary-color, 30);
     background-color: map-get($primary-color, 400);
     font-size: 15px;
+    margin-top: 10px;
+    margin-left: 10px;
     padding: 7px;
     border-radius: 5px;
     border-style: solid;
@@ -272,14 +282,14 @@ export default {
 
   .service-arrow {
     height: 40px;
-    line-height: 40px;
-    margin-right: 0;
+    line-height: 60px;
+    margin-right: 10px;
     margin-left: 10px;
   }
 
   .service-arrow-icon {
     height: 40px;
-    line-height: 40px;
+    line-height: 60px;
     height: 15px;
   }
 
