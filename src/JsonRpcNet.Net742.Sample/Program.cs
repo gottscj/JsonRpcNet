@@ -20,7 +20,9 @@ namespace JsonRpcNet.Net742.Sample
                 Version = "v1",
                 Contact = new JsonRpcContact
                 {
-                    Email = "test@test.com"
+                    Name = "The Dude",
+                    Email = "the@dude.com",
+                    Url = "http://www.thedude.com"
                 }
             });
 

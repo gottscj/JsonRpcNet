@@ -2,17 +2,35 @@
   <div id="ApiInfo">
     <div class="api-title">
       <!-- eslint-disable-next-line -->
-      {{ info.title }}<small><pre class="api-version">{{ info.version }}</pre></small>
+      {{ info.title
+      }}<small
+        ><pre class="api-version">{{ info.version }}</pre></small
+      >
     </div>
-    <div class="api-endpoint">[ Endpoint: {{ info.jsonRpcApiEndpoint }} ]</div>
-    <!-- TODO: add contact -->
+
+    <div class="detailed-info">
+      <div class="api-endpoint">Endpoint: {{ info.jsonRpcApiEndpoint }}</div>
+
+      <Contact
+        v-if="!!info && !!info.contact"
+        v-bind:name="info.contact.name"
+        v-bind:email="info.contact.email"
+        v-bind:url="info.contact.url"
+      />
+    </div>
+
     <div class="api-description">{{ info.description }}</div>
   </div>
 </template>
 
 <script>
+import Contact from "./Contact";
+
 export default {
   name: "ApiInfo",
+  components: {
+    Contact
+  },
   props: {
     info: {
       description: String,
@@ -31,7 +49,7 @@ export default {
 
 <style scoped lang="scss">
 #ApiInfo {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 
   .api-title {
     color: map-get($primary-color, 500);
@@ -63,12 +81,18 @@ export default {
     font-weight: 300 !important;
     margin: 0;
     font-weight: 600;
-    color: map-get($secondary-color, 400);
+    color: map-get($primary-color, 400);
   }
 
   .api-description {
     margin: 10px;
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .detailed-info {
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 2px solid map-get($primary-color, 100);
   }
 }
 </style>

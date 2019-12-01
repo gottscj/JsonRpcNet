@@ -30,7 +30,7 @@
                   selectedServerInfo.origin === 'local'
               "
               v-on:click="removeSelectedServer"
-              variant="danger"
+              v-bind:style="{ 'background-color': '#c46464' }"
               >-</BButton
             >
           </BInputGroupAppend>
@@ -61,7 +61,7 @@
             v-bind:key="service.path"
           >
             <ApiService
-              v-bind:color="serviceColors[index % serviceColors.length]"
+              v-bind:color="colorsService.getColor(index)"
               v-bind:serverInfo="selectedServerInfo"
               v-bind:service="service"
             />
@@ -112,6 +112,7 @@ import NotificationPanel from "./components/NotificationPanel.vue";
 import NotificationPanelButton from "./components/NotificationPanelButton.vue";
 import SearchBox from "./components/SearchBox.vue";
 import { TypeDefinitionsService } from "./services/TypeDefinitions.service";
+import { ColorsService } from "./services/Colors.service";
 import AddServerFormDialog from "./components/AddServerFormDialog";
 import { Validator } from "jsonschema";
 
@@ -159,19 +160,7 @@ export default {
       searchString: "",
       showNotifications: false,
       showAddServerDialog: false,
-      serviceColors: [
-        "#ADEFD1FF",
-        "#86899C",
-        "#D6ED17FF",
-        "#ED2B33FF",
-        "#A4CCFF",
-        "#D85A7FFF",
-        "#F95700FF",
-        "#2C5F2D",
-        "#00539CFF",
-        "#97BC62FF",
-        "#EEA47FFF"
-      ]
+      colorsService: new ColorsService()
     };
   },
   methods: {
