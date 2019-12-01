@@ -40,6 +40,7 @@
 
     <AddServerFormDialog
       v-bind:show="showAddServerDialog"
+      v-bind:existingServerNames="allServerNames"
       v-on:close="showAddServerDialog = false"
       v-on:addServer="addServer($event)"
     />
@@ -310,6 +311,9 @@ export default {
       }
 
       return selectedServerInfo[0];
+    },
+    allServerNames: function() {
+      return this.servers ? this.servers.map(s => s.name) : [];
     }
   },
   async mounted() {

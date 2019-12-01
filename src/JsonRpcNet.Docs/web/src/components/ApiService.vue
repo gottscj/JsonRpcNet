@@ -1,7 +1,7 @@
 <template>
   <div id="ApiService">
     <button class="accordion" @click="toggleAccordion">
-      <dic class="service-color" v-bind:style="{ background: color }" />
+      <div class="service-color" v-bind:style="{ background: color }" />
       <div class="service-path">{{ service.path }}</div>
       <div class="service-name">{{ service.name }}</div>
       <div class="service-description">{{ service.description }}</div>

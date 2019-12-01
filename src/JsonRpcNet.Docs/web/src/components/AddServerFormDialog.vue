@@ -11,15 +11,28 @@
         description="Server name to be used for display"
         label="Name"
         label-for="name-input"
-        invalid-feedback="Name is required"
       >
         <BFormInput
           id="name-input"
           v-model="$v.form.name.$model"
           v-bind:state="$v.form.name.$dirty ? !$v.form.name.$error : null"
-          aria-describedby="input-1-live-feedback"
+          aria-describedby="name-input-live-feedback"
           placeholder="My server"
         ></BFormInput>
+
+        <BFormInvalidFeedback
+          v-if="!$v.form.name.required"
+          id="name-input-live-feedback"
+        >
+          Name is required
+        </BFormInvalidFeedback>
+
+        <BFormInvalidFeedback
+          v-if="!$v.form.name.mustBeUnique"
+          id="name-input-live-feedback"
+        >
+          This name is already in use. It must be unique
+        </BFormInvalidFeedback>
       </BFormGroup>
 
       <BFormGroup
@@ -32,7 +45,6 @@
           id="url-input"
           v-model="$v.form.url.$model"
           v-bind:state="$v.form.url.$dirty ? !$v.form.url.$error : null"
-          aria-describedby="input-1-live-feedback"
           placeholder="http://localhost:5000"
         ></BFormInput>
       </BFormGroup>
@@ -47,7 +59,6 @@
           id="docs-input"
           v-model="$v.form.docs.$model"
           v-bind:state="$v.form.docs.$dirty ? !$v.form.docs.$error : null"
-          aria-describedby="input-1-live-feedback"
           placeholder="jsonrpc/jsonRpcApi.json"
         ></BFormInput>
       </BFormGroup>
@@ -62,7 +73,6 @@
           id="ws-input"
           v-model="$v.form.ws.$model"
           v-bind:state="$v.form.ws.$dirty ? !$v.form.ws.$error : null"
-          aria-describedby="input-1-live-feedback"
           placeholder="ws://localhost:5000"
         ></BFormInput>
       </BFormGroup>
@@ -71,9 +81,25 @@
 </template>
 
 <script>
-import { BForm, BModal, BFormGroup, BFormInput } from "bootstrap-vue";
+import {
+  BForm,
+  BFormInvalidFeedback,
+  BModal,
+  BFormGroup,
+  BFormInput
+} from "bootstrap-vue";
 import { validationMixin } from "vuelidate";
 import { required } from "vuelidate/lib/validators";
+
+function mustBeUnique(chosenElement) {
+  return (
+    !this.existingServerNames ||
+    !chosenElement ||
+    !this.existingServerNames
+      .map(n => n.trim().toLowerCase())
+      .includes(chosenElement.trim().toLowerCase())
+  );
+}
 
 export default {
   mixins: [validationMixin],
@@ -81,11 +107,13 @@ export default {
   components: {
     BModal,
     BForm,
+    BFormInvalidFeedback,
     BFormGroup,
     BFormInput
   },
   props: {
-    show: Boolean
+    show: Boolean,
+    existingServerNames: Array
   },
   data() {
     return {
@@ -100,7 +128,8 @@ export default {
   validations: {
     form: {
       name: {
-        required
+        required,
+        mustBeUnique
       },
       url: {
         required
