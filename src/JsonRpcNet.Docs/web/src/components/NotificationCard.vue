@@ -2,7 +2,16 @@
   <div id="NotificationCard">
     <div class="notification-progress" v-bind:style="{ opacity: opacity }">
       <div class="notification-card" v-on:click="toggleShowNotification">
-        {{ notification.title }}
+        <div
+          class="notification-card-color"
+          v-bind:style="{ background: notification.color }"
+        />
+        <div class="notification-card-service-title">
+          {{ notification.serviceName }}
+          <div class="notification-card-title">
+            {{ notification.title }}
+          </div>
+        </div>
         <div class="notification-timestamp">
           {{ notification.timestampStr() }}
         </div>
@@ -13,7 +22,16 @@
     </div>
     <ModalDialog v-if="showNotification" v-on:close="toggleShowNotification">
       <div class="notification-fullcard-title">
-        {{ notification.title }}
+        <div
+          class="notification-fullcard-color"
+          v-bind:style="{ background: notification.color }"
+        />
+        <div class="notification-card-service-title">
+          {{ notification.serviceName }}
+          <div class="notification-card-title">
+            {{ notification.title }}
+          </div>
+        </div>
         <div class="notification-timestamp">
           {{ notification.timestampStr() }}
         </div>
@@ -95,11 +113,29 @@ export default {
     margin-bottom: 6px;
   }
 
+  .notification-card-color {
+    float: left;
+    height: 38px;
+    width: 10px;
+    border-radius: 4px 0px 0px 4px;
+  }
+
+  .notification-card-service-title {
+    margin-top: 2px;
+    margin-left: 10px;
+    font-size: 10px;
+  }
+
+  .notification-card-title {
+    font-size: 14px;
+  }
+
   .notification-card {
+    display: flex;
+    height: 40px;
     background-color: map-get($accent-color, 30);
     color: inherit;
     cursor: pointer;
-    padding: 8px;
     width: 100%;
     text-align: left;
     outline: none;
@@ -109,6 +145,13 @@ export default {
     border-radius: 5px 5px 5px 5px;
     border-color: map-get($accent-color, 400);
     transition: opacity 2s;
+  }
+
+  .notification-fullcard-color {
+    float: left;
+    height: 38px;
+    width: 10px;
+    border-radius: 4px 0px 0px 0px;
   }
 
   .notification-fullcard-title {
@@ -123,12 +166,15 @@ export default {
 
   .notification-fullcard-content {
     @extend .notification-card;
+    display: block;
     cursor: default;
     border-radius: 0px 0px 5px 5px;
     margin-top: 0px;
     margin-bottom: 0px;
+    padding: 5px;
     border-top: 0px;
     max-height: 500px;
+    height: auto;
     overflow: auto;
   }
 
@@ -139,7 +185,10 @@ export default {
   }
 
   .notification-timestamp {
-    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: auto;
+    //float: right;
     height: 20px;
     background-color: map-get($accent-color, 100);
     color: map-get($primary-color, 900);

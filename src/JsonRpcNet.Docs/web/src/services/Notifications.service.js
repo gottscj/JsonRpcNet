@@ -24,8 +24,8 @@ export class NotificationsService {
     this.notifications = [];
   }
 
-  add(title, content) {
-    const notification = new Notification(title, content);
+  add(color, serviceName, title, content) {
+    const notification = new Notification(color, serviceName, title, content);
     this.notifications = [notification, ...this.notifications];
   }
 }

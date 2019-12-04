@@ -52,6 +52,8 @@
             class="service-group-element"
             v-bind:websocket="websocket"
             v-bind:notification="notification"
+            v-bind:color="color"
+            v-bind:serviceName="service.name"
             v-model="notificationsState[index]"
           />
         </div>

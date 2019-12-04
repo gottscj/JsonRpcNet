@@ -2,7 +2,11 @@ export class Notification {
   title;
   content;
   timestamp;
-  constructor(title, content) {
+  serviceName;
+  color;
+  constructor(color, serviceName, title, content) {
+    this.color = color;
+    this.serviceName = serviceName;
     this.title = title;
     this.content = content;
     this.timestamp = new Date();

@@ -58,7 +58,9 @@ export default {
       description: String,
       params: {}
     },
-    websocket: JsonRpcWebsocket
+    websocket: JsonRpcWebsocket,
+    color: String,
+    serviceName: String
   },
   watch: {
     websocket: function() {
@@ -82,6 +84,8 @@ export default {
           // eslint-disable-next-line
           var func = eventArgs => {
             this.$root.$data.notificationsService.add(
+              this.color,
+              this.serviceName,
               this.notification.name,
               JSON.stringify(eventArgs, null, 2)
             );
